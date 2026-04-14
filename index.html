@@ -276,7 +276,8 @@ window.addEventListener('load', function() {
     });
   });
 
-  SHEET_ID = params['sheet'] || '';
+  // URL param overrides hardcoded ID
+  if(params['sheet']) SHEET_ID = params['sheet'];
   if(params['tab']) SHOW_TAB = params['tab'];
 
   if(!SHEET_ID) {
