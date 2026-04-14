@@ -132,40 +132,42 @@ function fetchData() {
 // ─── PARSE SHEET DATA ───────────────────────────────────────────────────────
 function processSheet(data) {
   var table = data.table;
-  if(!table || !table.rows || !table.rows.length) return;
+  if(!table || !table.rows || !table.rows.length) {
+    document.getElementById('loadMsg').textContent = 'Sem dados. Faz Save no editor.';
+    return;
+  }
 
-  // First row = headers, second row = metadata JSON, rest = day data
-  var firstRow = table.rows[0];
-  var type = firstRow.c[0] ? String(firstRow.c[0].v||'') : '';
+  // Collect all cell values and concatenate (handles chunked data)
+  var combined = '';
+  for(var r=0; r<table.rows.length; r++) {
+    var row = table.rows[r];
+    if(row.c && row.c[0] && row.c[0].v) {
+      combined += String(row.c[0].v);
+    }
+  }
+  if(!combined) {
+    document.getElementById('loadMsg').textContent = 'Sheet vazia. Faz Save no editor.';
+    return;
+  }
 
-  if(type === '__meta__') {
-    // Row 1: metadata (show name, screen names, days structure)
-    var metaJson = firstRow.c[1] ? String(firstRow.c[1].v||'{}') : '{}';
-    var meta = JSON.parse(metaJson);
-    if(meta.name) document.getElementById('topName').textContent = meta.name;
-    if(meta.screenNames) {
-      screenNames = meta.screenNames;
-      for(var i=0;i<4;i++){var th=document.getElementById('th'+i);if(th)th.textContent=screenNames[i];}
-    }
-    if(meta.days) {
-      days = meta.days;
-      if(!days[currentDay]) currentDay = 0;
-      rows = days[currentDay].rows || [];
-    }
-  } else {
-    // Legacy: single JSON blob in first cell
-    var json = firstRow.c[0] ? String(firstRow.c[0].v||'[]') : '[]';
-    var parsed = JSON.parse(json);
-    if(parsed.days) {
+  try {
+    var parsed = JSON.parse(combined);
+    if(parsed && parsed.days) {
       days = parsed.days;
-      if(parsed.screenNames) {
+      if(parsed.screenNames && parsed.screenNames.length===4) {
         screenNames = parsed.screenNames;
         for(var i=0;i<4;i++){var th=document.getElementById('th'+i);if(th)th.textContent=screenNames[i];}
       }
       if(!days[currentDay]) currentDay = 0;
       rows = days[currentDay].rows || [];
       if(parsed.name) document.getElementById('topName').textContent = parsed.name;
+    } else if(Array.isArray(parsed)) {
+      days = [{id:'d1',label:'Day 1',rows:parsed}];
+      rows = parsed;
     }
+  } catch(e) {
+    document.getElementById('loadMsg').textContent = 'Erro ao ler dados: '+e.message;
+    return;
   }
 
   if(firstLoad) {
