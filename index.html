@@ -5,53 +5,138 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Run of Show — Live</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#fff;--s1:#f8f9fc;--s2:#f0f2f9;--border:#e2e6f0;--text:#1a1d2e;--muted:#6b7280;--blue:#4a7cf7;--amber:#f5a623;--cyan:#0891b2;--purple:#7c3aed;--green:#059669}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
-#topbar{background:#fff;border-bottom:2px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-#topbar h1{font-size:16px;font-weight:700}
-#clock{font-size:14px;font-weight:600;color:var(--blue);font-variant-numeric:tabular-nums}
-#status{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-#dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes spin{to{transform:rotate(360deg)}}
-#days{background:var(--s1);border-bottom:1px solid var(--border);display:flex;gap:4px;padding:8px 16px;overflow-x:auto}
-.day-tab{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;color:var(--muted);white-space:nowrap}
-.day-tab.active{background:#fff;border-color:var(--blue);color:var(--blue)}
-#wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:900px}
-thead tr{background:var(--s2);border-bottom:2px solid var(--border)}
-th{padding:8px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);text-align:left;white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--border)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f6fa;--card:#fff;--s1:#f0f2f9;--s2:#e8ecf8;
+  --border:#dde2f0;--text:#1a1d2e;--muted:#6b7280;
+  --blue:#4a7cf7;--blue-light:#eff3ff;
+  --amber:#d97706;--amber-light:#fffbeb;
+  --cyan:#0891b2;--cyan-light:#ecfeff;
+  --purple:#7c3aed;--purple-light:#f5f3ff;
+  --green:#059669;--green-light:#ecfdf5;
+  --red:#dc2626;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* TOPBAR */
+#topbar{
+  background:var(--card);border-bottom:2px solid var(--border);
+  padding:0 20px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.06);
+  height:56px;gap:16px;
+}
+#showName{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+#dot{width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0}
+#dot.live{animation:pulse 2s infinite}
+#dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+#clock{font-size:20px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;letter-spacing:-1px;white-space:nowrap}
+
+/* CURRENT CUE BANNER */
+#current-banner{
+  background:var(--blue);color:#fff;padding:10px 20px;
+  display:none;align-items:center;justify-content:space-between;gap:12px;
+  font-size:14px;
+}
+#current-banner .cue-name{font-weight:700;font-size:15px}
+#current-banner .cue-timer{font-variant-numeric:tabular-nums;font-weight:800;font-size:18px;letter-spacing:-1px;font-family:monospace}
+#current-banner .cue-progress{height:3px;background:rgba(255,255,255,.3);border-radius:2px;margin-top:6px;position:relative}
+#current-banner .cue-progress-fill{height:100%;background:#fff;border-radius:2px;transition:width 1s linear}
+
+/* DAY TABS */
+#days{
+  background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;gap:4px;padding:8px 20px;overflow-x:auto;
+}
+.day-tab{
+  padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;border:1.5px solid transparent;color:var(--muted);
+  white-space:nowrap;transition:all .15s;
+}
+.day-tab:hover{background:var(--s1);color:var(--text)}
+.day-tab.active{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+
+/* TABLE */
+#wrap{overflow-x:auto;padding:16px}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:960px;background:var(--card);border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+thead tr{background:var(--s1)}
+th{
+  padding:10px 12px;font-size:10px;font-weight:800;text-transform:uppercase;
+  letter-spacing:.8px;color:var(--muted);text-align:left;white-space:nowrap;
+  border-bottom:2px solid var(--border);
+}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
 tbody tr:hover{background:var(--s1)}
-tbody tr.active-cue{background:#eff6ff;border-left:3px solid var(--blue)}
+tbody tr.active-cue{background:var(--blue-light) !important}
 tbody tr.section-row{background:var(--s2)}
-td{padding:8px 10px;font-size:13px;vertical-align:top}
-.col-audio{color:var(--amber);font-weight:600;font-size:12px}
-.col-micro{color:var(--cyan);font-weight:600;font-size:12px}
-.col-video{color:var(--purple);font-weight:600;font-size:12px}
-.col-lights{color:var(--blue);font-weight:600;font-size:12px}
-.col-stage{color:var(--green);font-weight:600;font-size:12px}
-td.num{color:var(--muted);font-size:11px;width:36px}
-td.name{font-weight:600;max-width:220px}
-td.time{font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap}
-td.dur{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted)}
-td.screens{font-size:11px;color:var(--muted);max-width:140px}
-td.notes{font-size:12px;color:var(--muted);max-width:160px}
-.progress-bar{height:3px;background:var(--blue);border-radius:2px;margin-top:4px}
-.speaker-sub{font-size:11px;color:var(--muted);margin-top:2px}
-#loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:12px;text-align:center;padding:20px}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+td{padding:9px 12px;font-size:13px;vertical-align:middle;border-bottom:1px solid var(--border)}
+tbody tr:last-child td{border-bottom:none}
+
+td.num{color:var(--muted);font-size:11px;width:32px;text-align:center;font-weight:600}
+td.name-cell{font-weight:700;max-width:200px;line-height:1.3}
+td.time-cell{font-variant-numeric:tabular-nums;font-size:12px;white-space:nowrap;font-weight:600;color:var(--text)}
+td.dur-cell{font-variant-numeric:tabular-nums;font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* Department cells */
+td.col-audio{background:var(--amber-light);color:var(--amber);font-weight:700;font-size:12px;max-width:100px}
+td.col-micro{background:var(--cyan-light);color:var(--cyan);font-weight:700;font-size:12px;max-width:100px}
+td.col-video{background:var(--purple-light);color:var(--purple);font-weight:700;font-size:12px;max-width:100px}
+td.col-lights{background:var(--blue-light);color:var(--blue);font-weight:700;font-size:12px;max-width:100px}
+td.col-stage{background:var(--green-light);color:var(--green);font-weight:700;font-size:12px;max-width:100px}
+td.screens{font-size:11px;color:var(--muted);max-width:120px;line-height:1.3}
+td.notes-cell{font-size:12px;color:var(--muted);max-width:160px;line-height:1.3}
+
+/* Active cue highlight */
+tr.active-cue td{border-top:1px solid rgba(74,124,247,.2);border-bottom:1px solid rgba(74,124,247,.2)}
+tr.active-cue td.num::before{content:'▶';color:var(--blue);font-size:10px}
+tr.active-cue td.num{color:transparent}
+
+.speaker-sub{font-size:11px;color:var(--muted);font-weight:400;margin-top:2px}
+.progress-bar{height:2px;background:var(--blue);border-radius:2px;margin-top:5px;opacity:.6}
+
+/* Section rows */
+tr.section-row td{
+  padding:6px 12px;font-size:10px;font-weight:800;letter-spacing:1px;
+  color:var(--muted);text-transform:uppercase;
+}
+
+/* Loading */
+#loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:14px;text-align:center;padding:20px}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Mobile */
+@media(max-width:768px){
+  #topbar{padding:0 12px;height:52px}
+  #clock{font-size:16px}
+  #wrap{padding:8px}
+  th,td{padding:7px 8px;font-size:12px}
+  td.col-audio,td.col-micro,td.col-video,td.col-lights,td.col-stage{max-width:70px}
+  #current-banner{padding:8px 12px}
+}
 </style>
 </head>
 <body>
+
 <div id="topbar">
   <h1 id="showName">Run of Show — Live</h1>
-  <div id="status"><div id="dot"></div><span id="statusTxt">Connecting...</span></div>
+  <div id="status"><div id="dot" class="live"></div><span id="statusTxt">Connecting...</span></div>
   <div id="clock">--:--:--</div>
 </div>
+
+<div id="current-banner">
+  <div style="flex:1;min-width:0">
+    <div style="font-size:11px;opacity:.8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px">Now running</div>
+    <div class="cue-name" id="banner-name">—</div>
+    <div class="cue-progress"><div class="cue-progress-fill" id="banner-fill" style="width:0%"></div></div>
+  </div>
+  <div class="cue-timer" id="banner-timer">00:00</div>
+</div>
+
 <div id="days"></div>
-<div id="loading"><div class="spinner"></div><p style="color:var(--muted);font-size:14px">Loading...</p></div>
+<div id="loading"><div class="spinner"></div><p style="color:var(--muted);font-size:14px;font-weight:500">Loading show data...</p></div>
 <div id="wrap" style="display:none"><table><thead id="thead"></thead><tbody id="tbody"></tbody></table></div>
 
 <script>
@@ -60,24 +145,18 @@ var SHOW_ID = '';
 var allDays = [];
 var screenNames = ['Screen 1','Screen 2','Screen 3','Screen 4'];
 var currentDay = 0;
+var activeCueStart = -1;
+var activeCueDur = 0;
+var activeCueName = '';
 
-function safeStr(v) {
-  if (v === null || v === undefined) return '';
-  return String(v);
-}
+function ss(v){ return (v===null||v===undefined)?'':String(v); }
 
 function getParams() {
   var p = {};
   var q = window.location.search.slice(1).split('&');
-  for (var i = 0; i < q.length; i++) {
-    var kv = q[i].split('=');
-    if (kv[0]) p[decodeURIComponent(kv[0])] = decodeURIComponent((kv[1] || '').replace(/\+/g, ' '));
-  }
+  for(var i=0;i<q.length;i++){var kv=q[i].split('=');if(kv[0])p[decodeURIComponent(kv[0])]=decodeURIComponent((kv[1]||'').replace(/\+/g,' '));}
   var h = window.location.hash.slice(1).split('&');
-  for (var i = 0; i < h.length; i++) {
-    var kv = h[i].split('=');
-    if (kv[0]) p[decodeURIComponent(kv[0])] = decodeURIComponent((kv[1] || '').replace(/\+/g, ' '));
-  }
+  for(var i=0;i<h.length;i++){var kv=h[i].split('=');if(kv[0])p[decodeURIComponent(kv[0])]=decodeURIComponent((kv[1]||'').replace(/\+/g,' '));}
   return p;
 }
 
@@ -85,187 +164,170 @@ function init() {
   var params = getParams();
   GAS_URL = params['gas'] || GAS_URL;
   SHOW_ID = params['show'] || SHOW_ID;
-  if (!GAS_URL) {
-    showMsg('No GAS URL. Use the Share button in RunOfShow to generate the viewer link.');
-    return;
-  }
-  if (!SHOW_ID) {
-    showMsg('No show ID in URL. Use the Share button in RunOfShow.');
-    return;
-  }
+  if(!GAS_URL){showMsg('⚙️','No GAS URL configured.','Use the Share button in RunOfShow to generate the viewer link.');return;}
+  if(!SHOW_ID){showMsg('⚙️','No show ID in URL.','Use the Share button in RunOfShow to generate the viewer link.');return;}
   fetchData();
-  setInterval(fetchData, 6000);
-  setInterval(updateClock, 1000);
-  updateClock();
+  setInterval(fetchData, 8000);
+  setInterval(tick, 1000);
+  tick();
 }
 
 function fetchData() {
-  var cbName = 'cb_' + Date.now();
-  var url = GAS_URL + '?action=getData&show=' + encodeURIComponent(SHOW_ID) + '&callback=' + cbName + '&t=' + Date.now();
-  window[cbName] = function(data) {
-    try { delete window[cbName]; } catch(e) {}
-    if (data && data.ok) {
-      onData(data);
-    } else {
-      showMsg('Show not found: ' + SHOW_ID);
-    }
+  var cb = 'cb_'+Date.now();
+  var url = GAS_URL+'?action=getData&show='+encodeURIComponent(SHOW_ID)+'&callback='+cb+'&t='+Date.now();
+  window[cb] = function(data){
+    try{delete window[cb];}catch(e){}
+    if(data && data.ok){onData(data);}
+    else{setError('Show not found: '+SHOW_ID);}
   };
   var s = document.createElement('script');
   s.src = url;
-  s.onerror = function() {
-    try { delete window[cbName]; } catch(e) {}
-    showMsg('Cannot reach server. Check GAS deploy settings.');
-  };
+  s.onerror = function(){try{delete window[cb];}catch(e){}setError('Cannot reach server.');};
   document.head.appendChild(s);
+  setTimeout(function(){if(window[cb]){delete window[cb];}},20000);
 }
 
 function onData(data) {
-  if (data.screenNames) screenNames = data.screenNames;
-  if (data.days && Array.isArray(data.days)) {
-    allDays = data.days;
-  } else if (data.rows) {
-    allDays = [{name: 'Day 1', rows: data.rows}];
-  }
-  if (data.evtData && data.evtData.name) {
-    document.getElementById('showName').textContent = data.evtData.name + ' — Live';
-  }
-  var total = 0;
-  for (var i = 0; i < allDays.length; i++) total += (allDays[i].rows || []).length;
-  document.getElementById('statusTxt').textContent = 'Live · ' + allDays.length + ' day' + (allDays.length > 1 ? 's' : '') + ' · ' + total + ' cues';
-  document.getElementById('dot').style.background = '#10b981';
+  if(data.screenNames) screenNames = data.screenNames;
+  if(data.days && Array.isArray(data.days)){allDays=data.days;}
+  else if(data.rows){allDays=[{name:'Day 1',rows:data.rows}];}
+  if(data.evtData && data.evtData.name) document.getElementById('showName').textContent = data.evtData.name+' — Live';
+  var total=0;for(var i=0;i<allDays.length;i++) total+=(allDays[i].rows||[]).length;
+  document.getElementById('statusTxt').textContent = 'Live · '+allDays.length+' day'+(allDays.length>1?'s':'')+' · '+total+' cues';
+  document.getElementById('dot').className = 'live';
   document.getElementById('loading').style.display = 'none';
   document.getElementById('wrap').style.display = 'block';
   buildDayTabs();
   render();
 }
 
-function showMsg(msg) {
-  document.getElementById('loading').innerHTML = '<p style="font-size:15px;color:var(--muted);max-width:400px">' + msg + '</p>';
-  document.getElementById('loading').style.display = 'flex';
-  document.getElementById('wrap').style.display = 'none';
-  document.getElementById('statusTxt').textContent = 'Error';
-  document.getElementById('dot').style.background = '#ef4444';
+function setError(msg){
+  document.getElementById('statusTxt').textContent = 'Reconnecting...';
+  document.getElementById('dot').className = 'error';
+}
+
+function showMsg(icon,title,sub){
+  document.getElementById('loading').innerHTML =
+    '<p style="font-size:36px">'+icon+'</p>'+
+    '<p style="font-size:16px;font-weight:700">'+title+'</p>'+
+    '<p style="font-size:13px;color:var(--muted);max-width:360px">'+sub+'</p>';
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('wrap').style.display='none';
 }
 
 function buildDayTabs() {
   var c = document.getElementById('days');
-  c.innerHTML = '';
-  for (var i = 0; i < allDays.length; i++) {
-    (function(idx) {
-      var t = document.createElement('div');
-      t.className = 'day-tab' + (idx === currentDay ? ' active' : '');
-      t.textContent = allDays[idx].name || ('Day ' + (idx + 1));
-      t.onclick = function() { currentDay = idx; buildDayTabs(); render(); };
+  c.innerHTML='';
+  for(var i=0;i<allDays.length;i++){
+    (function(idx){
+      var t=document.createElement('div');
+      t.className='day-tab'+(idx===currentDay?' active':'');
+      t.textContent=allDays[idx].name||('Day '+(idx+1));
+      t.onclick=function(){currentDay=idx;buildDayTabs();render();};
       c.appendChild(t);
     })(i);
   }
 }
 
 function render() {
-  var rows = (allDays[currentDay] && allDays[currentDay].rows) || [];
-  document.getElementById('thead').innerHTML = '<tr>' +
-    '<th>#</th><th>Item</th><th>Dur.</th><th>Start</th>' +
-    '<th style="color:var(--amber)">Audio</th>' +
-    '<th style="color:var(--cyan)">Micro</th>' +
-    '<th style="color:var(--purple)">Video</th>' +
-    '<th style="color:var(--blue)">Lights</th>' +
-    '<th style="color:var(--green)">Stage</th>' +
-    '<th>' + esc(safeStr(screenNames[0])) + '</th>' +
-    '<th>' + esc(safeStr(screenNames[1])) + '</th>' +
-    '<th>' + esc(safeStr(screenNames[2])) + '</th>' +
-    '<th>' + esc(safeStr(screenNames[3])) + '</th>' +
+  var rows=(allDays[currentDay]&&allDays[currentDay].rows)||[];
+  document.getElementById('thead').innerHTML='<tr>'+
+    '<th>#</th><th>Item</th><th>Dur.</th><th>Start</th>'+
+    '<th style="color:var(--amber)">Audio</th>'+
+    '<th style="color:var(--cyan)">Micro</th>'+
+    '<th style="color:var(--purple)">Video</th>'+
+    '<th style="color:var(--blue)">Lights</th>'+
+    '<th style="color:var(--green)">Stage</th>'+
+    '<th>'+esc(ss(screenNames[0]))+'</th>'+
+    '<th>'+esc(ss(screenNames[1]))+'</th>'+
+    '<th>'+esc(ss(screenNames[2]))+'</th>'+
+    '<th>'+esc(ss(screenNames[3]))+'</th>'+
     '<th>Notes</th></tr>';
-  var html = '';
-  var num = 0;
-  for (var i = 0; i < rows.length; i++) {
-    var r = rows[i];
-    if (!r) continue;
-    if (r.type === 'section') {
-      html += '<tr class="section-row"><td colspan="14" style="padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase">' + esc(safeStr(r.name)) + '</td></tr>';
+  var html='';
+  var num=0;
+  activeCueStart=-1; activeCueDur=0; activeCueName='';
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    if(!r) continue;
+    if(r.type==='section'){
+      html+='<tr class="section-row"><td colspan="14">'+esc(ss(r.name))+'</td></tr>';
       continue;
     }
     num++;
-    var active = isActive(r);
-    var pct = active ? getProgress(r) : 0;
-    html += '<tr class="' + (active ? 'active-cue' : '') + '">';
-    html += '<td class="num">' + num + '</td>';
-    html += '<td class="name"><div>' + esc(safeStr(r.name)) + '</div>' +
-      (r.speaker ? '<div class="speaker-sub">' + esc(safeStr(r.speaker)) + '</div>' : '') +
-      (active ? '<div class="progress-bar" style="width:' + pct + '%"></div>' : '') + '</td>';
-    html += '<td class="dur">' + esc(safeStr(r.dur)) + '</td>';
-    html += '<td class="time">' + esc(safeStr(r.start)) + '</td>';
-    html += '<td class="col-audio">' + esc(safeStr(r.audio)) + '</td>';
-    html += '<td class="col-micro">' + esc(safeStr(r.slides)) + '</td>';
-    html += '<td class="col-video">' + esc(safeStr(r.video)) + '</td>';
-    html += '<td class="col-lights">' + esc(safeStr(r.lights)) + '</td>';
-    html += '<td class="col-stage">' + esc(safeStr(r.furniture)) + '</td>';
-    html += '<td class="screens">' + esc(safeStr(r.sc0)) + '</td>';
-    html += '<td class="screens">' + esc(safeStr(r.sc1)) + '</td>';
-    html += '<td class="screens">' + esc(safeStr(r.sc2)) + '</td>';
-    html += '<td class="screens">' + esc(safeStr(r.sc3)) + '</td>';
-    html += '<td class="notes">' + esc(safeStr(r.comments)) + '</td>';
-    html += '</tr>';
+    var active=isActive(r);
+    var pct=active?getProgress(r):0;
+    if(active){activeCueStart=parseTimeSecs(ss(r.start));activeCueDur=parseDurSecs(ss(r.dur))||900;activeCueName=ss(r.name);}
+    html+='<tr class="'+(active?'active-cue':'')+'">';
+    html+='<td class="num">'+num+'</td>';
+    html+='<td class="name-cell">'+
+      '<div>'+esc(ss(r.name))+'</div>'+
+      (r.speaker?'<div class="speaker-sub">'+esc(ss(r.speaker))+'</div>':'')+
+      (active?'<div class="progress-bar" style="width:'+pct+'%"></div>':'')+
+      '</td>';
+    html+='<td class="dur-cell">'+esc(ss(r.dur))+'</td>';
+    html+='<td class="time-cell">'+esc(ss(r.start))+'</td>';
+    html+='<td class="col-audio">'+esc(ss(r.audio))+'</td>';
+    html+='<td class="col-micro">'+esc(ss(r.slides))+'</td>';
+    html+='<td class="col-video">'+esc(ss(r.video))+'</td>';
+    html+='<td class="col-lights">'+esc(ss(r.lights))+'</td>';
+    html+='<td class="col-stage">'+esc(ss(r.furniture))+'</td>';
+    html+='<td class="screens">'+esc(ss(r.sc0))+'</td>';
+    html+='<td class="screens">'+esc(ss(r.sc1))+'</td>';
+    html+='<td class="screens">'+esc(ss(r.sc2))+'</td>';
+    html+='<td class="screens">'+esc(ss(r.sc3))+'</td>';
+    html+='<td class="notes-cell">'+esc(ss(r.comments))+'</td>';
+    html+='</tr>';
   }
-  document.getElementById('tbody').innerHTML = html;
-  var activeEl = document.getElementById('tbody').querySelector('.active-cue');
-  if (activeEl) activeEl.scrollIntoView({behavior: 'smooth', block: 'center'});
+  document.getElementById('tbody').innerHTML=html;
+  var activeEl=document.getElementById('tbody').querySelector('.active-cue');
+  if(activeEl) activeEl.scrollIntoView({behavior:'smooth',block:'center'});
+  updateBanner();
 }
 
-function isActive(r) {
-  if (!r || !r.start) return false;
-  var nm = nowMins();
-  var s = parseTimeMins(safeStr(r.start));
-  if (s < 0) return false;
-  var d = parseDurMins(safeStr(r.dur)) || 15;
-  return nm >= s && nm < s + d;
+function updateBanner(){
+  var banner=document.getElementById('current-banner');
+  if(activeCueStart<0){banner.style.display='none';return;}
+  banner.style.display='flex';
+  document.getElementById('banner-name').textContent=activeCueName;
+  var ns=nowSecs();
+  var elapsed=ns-activeCueStart;
+  var pct=Math.min(100,Math.max(0,(elapsed/activeCueDur)*100));
+  document.getElementById('banner-fill').style.width=pct+'%';
+  var rem=activeCueDur-elapsed;
+  if(rem<0) rem=0;
+  var mm=Math.floor(rem/60);
+  var sec=Math.floor(rem%60);
+  document.getElementById('banner-timer').textContent=String(mm).padStart(2,'0')+':'+String(sec).padStart(2,'0');
 }
 
-function getProgress(r) {
-  var ns = nowSecs();
-  var s = parseTimeSecs(safeStr(r.start));
-  var d = parseDurSecs(safeStr(r.dur)) || 900;
-  if (s < 0) return 0;
-  return Math.min(100, Math.max(0, ((ns - s) / d) * 100));
+function isActive(r){
+  if(!r.start) return false;
+  var nm=nowMins(), s=parseTimeMins(ss(r.start));
+  if(s<0) return false;
+  return nm>=s && nm<s+(parseDurMins(ss(r.dur))||15);
 }
+function getProgress(r){
+  var ns=nowSecs(), s=parseTimeSecs(ss(r.start)), d=parseDurSecs(ss(r.dur))||900;
+  return s<0?0:Math.min(100,Math.max(0,((ns-s)/d)*100));
+}
+function nowMins(){var n=new Date();return n.getHours()*60+n.getMinutes();}
+function nowSecs(){var n=new Date();return n.getHours()*3600+n.getMinutes()*60+n.getSeconds();}
+function parseTimeMins(t){if(!t)return -1;t=String(t);var m=t.match(/(\d+):(\d+)/);return m?+m[1]*60+ +m[2]:-1;}
+function parseTimeSecs(t){if(!t)return -1;t=String(t);var m=t.match(/(\d+):(\d+):?(\d*)/);return m?+m[1]*3600+ +m[2]*60+(+m[3]||0):-1;}
+function parseDurMins(d){if(!d&&d!==0)return 0;d=String(d);var m=d.match(/(\d+):(\d+)/);if(m)return +m[1]*60+ +m[2];return parseFloat(d)||0;}
+function parseDurSecs(d){if(!d&&d!==0)return 0;d=String(d);var m=d.match(/(\d+):(\d+):?(\d*)/);if(m)return +m[1]*3600+ +m[2]*60+(+m[3]||0);return parseDurMins(d)*60;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function nowMins() { var n = new Date(); return n.getHours() * 60 + n.getMinutes(); }
-function nowSecs() { var n = new Date(); return n.getHours() * 3600 + n.getMinutes() * 60 + n.getSeconds(); }
-
-function parseTimeMins(t) {
-  t = safeStr(t);
-  var m = t.match(/(\d+):(\d+)/);
-  return m ? parseInt(m[1]) * 60 + parseInt(m[2]) : -1;
-}
-function parseTimeSecs(t) {
-  t = safeStr(t);
-  var m = t.match(/(\d+):(\d+):?(\d*)/);
-  return m ? parseInt(m[1]) * 3600 + parseInt(m[2]) * 60 + (parseInt(m[3]) || 0) : -1;
-}
-function parseDurMins(d) {
-  d = safeStr(d);
-  if (!d) return 0;
-  var m = d.match(/(\d+):(\d+)/);
-  if (m) return parseInt(m[1]) * 60 + parseInt(m[2]);
-  return parseFloat(d) || 0;
-}
-function parseDurSecs(d) {
-  d = safeStr(d);
-  if (!d) return 0;
-  var m = d.match(/(\d+):(\d+):?(\d*)/);
-  if (m) return parseInt(m[1]) * 3600 + parseInt(m[2]) * 60 + (parseInt(m[3]) || 0);
-  return parseDurMins(d) * 60;
-}
-function esc(s) {
-  return safeStr(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
-function updateClock() {
-  var n = new Date();
-  document.getElementById('clock').textContent =
-    String(n.getHours()).padStart(2, '0') + ':' +
-    String(n.getMinutes()).padStart(2, '0') + ':' +
-    String(n.getSeconds()).padStart(2, '0');
-  if (document.getElementById('wrap').style.display !== 'none') render();
+function tick(){
+  var n=new Date();
+  document.getElementById('clock').textContent=
+    String(n.getHours()).padStart(2,'0')+':'+
+    String(n.getMinutes()).padStart(2,'0')+':'+
+    String(n.getSeconds()).padStart(2,'0');
+  if(document.getElementById('wrap').style.display!=='none'){
+    render();
+    updateBanner();
+  }
 }
 
 init();
