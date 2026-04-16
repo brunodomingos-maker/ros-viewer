@@ -2,94 +2,299 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Run of Show</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Run of Show — Admin</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:#f5f6fa;font-family:'Inter','Segoe UI',system-ui,sans-serif;display:flex;align-items:center;justify-content:center}
-.card{background:#fff;border:1.5px solid rgba(30,40,100,.10);border-radius:18px;box-shadow:0 8px 32px rgba(30,40,100,.10);padding:40px 36px;width:360px;max-width:94vw;text-align:center}
-.logo{width:48px;height:48px;background:#4361ee;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;margin:0 auto 20px}
-.show-name{font-size:18px;font-weight:800;color:#0f1235;margin-bottom:4px}
-.show-sub{font-size:12px;color:#6b7280;margin-bottom:32px}
-.label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9ca3af;margin-bottom:14px}
-.btn-group{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
-.btn{width:100%;padding:14px 20px;border-radius:10px;border:1.5px solid transparent;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;transition:all .15s}
-.btn-collab{background:#f0f4ff;border-color:#c5d3fc;color:#3451d1}
-.btn-collab:hover{background:#e0e9ff;border-color:#4361ee}
-.btn-free{background:#f0fdf4;border-color:#a8e6c8;color:#1a7a4a}
-.btn-free:hover{background:#dcfce7;border-color:#2ec97e}
-.btn-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.btn-collab .btn-icon{background:#dde6ff}
-.btn-free .btn-icon{background:#d1fae5}
-.btn-text{flex:1}
-.btn-title{font-size:13px;font-weight:700;display:block}
-.btn-desc{font-size:11px;font-weight:400;opacity:.7;display:block;margin-top:1px}
-.divider{height:1px;background:rgba(30,40,100,.07);margin:20px 0}
-.footer{font-size:10px;color:#9ca3af;line-height:1.6}
+:root{--bg:#f7f8fc;--s1:#fff;--border:rgba(30,40,100,.10);--border2:rgba(30,40,100,.15);--text:#0f1235;--muted:#4a5280;--blue:#4361ee;--green:#2ec97e;--amber:#f0960a;--red:#e63946}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:13px}
+.topbar{height:52px;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:0 1px 8px rgba(30,40,100,.07);display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:10}
+.tb-logo{width:28px;height:28px;border-radius:7px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff}
+.tb-title{font-size:14px;font-weight:800;color:var(--text);flex:1}
+.tb-badge{padding:2px 8px;border-radius:4px;background:#fff8ed;border:1px solid #fce0a8;color:#b87008;font-size:10px;font-weight:700;text-transform:uppercase}
+.page{max-width:860px;margin:0 auto;padding:28px 20px 60px}
+.sec{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:28px 0 10px}
+.card{background:#fff;border:1.5px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:0 2px 8px rgba(30,40,100,.06)}
+.row{display:flex;align-items:center;padding:14px 18px;gap:12px;border-bottom:1px solid rgba(30,40,100,.07)}
+.row:last-child{border-bottom:none}
+.row-info{flex:1;min-width:0}
+.row-name{font-size:14px;font-weight:700;color:var(--text)}
+.row-sub{font-size:10px;color:var(--muted);font-family:'Courier New',monospace;margin-top:2px}
+.pw-wrap{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.inp{padding:6px 10px;border:1.5px solid var(--border2);border-radius:7px;background:var(--bg);color:var(--text);font-family:inherit;font-size:12px;outline:none}
+.inp:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(67,97,238,.1)}
+.inp-pw{width:140px}
+.btn{height:28px;padding:0 12px;border-radius:5px;border:none;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(67,97,238,.25)}
+.btn-blue:hover{background:#3451d1}
+.btn-green{background:#e8fdf3;border:1.5px solid #a8e6c8;color:#1a7a4a}
+.btn-green:hover{background:#d1fae5}
+.btn-red{background:#ffeef0;border:1.5px solid #ffc9cd;color:var(--red)}
+.btn-red:hover{background:#ffe0e3}
+.pw-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
+.pw-set{background:#e8fdf3;color:#1a7a4a;border:1px solid #a8e6c8}
+.pw-none{background:#fff8ed;color:#b87008;border:1px solid #fce0a8}
+.new-btn{width:100%;padding:14px;border:2px dashed var(--border2);border-radius:12px;background:#fff;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.new-btn:hover{border-color:var(--blue);color:var(--blue);background:#f0f4ff}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.loading{padding:30px;text-align:center;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px}
+.spin{width:14px;height:14px;border:2px solid rgba(30,40,100,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(30,36,80,.5);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border:1.5px solid var(--border2);border-radius:14px;padding:24px;width:400px;max-width:95vw;box-shadow:0 12px 40px rgba(30,40,100,.15)}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mhdr h2{font-size:15px;font-weight:800}
+.mx{width:24px;height:24px;border-radius:5px;border:1.5px solid var(--border2);background:var(--bg);color:var(--muted);cursor:pointer;font-family:inherit;font-size:12px}
+.mf{margin-bottom:12px}
+.mf label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.mi{width:100%;padding:9px 12px;border:1.5px solid var(--border2);border-radius:9px;background:#fff;color:var(--text);font-family:inherit;font-size:13px;outline:none}
+.mi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(67,97,238,.1)}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.mbtn{padding:8px 18px;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;border:none}
+.mbtn-cancel{background:var(--bg);color:var(--text);border:1.5px solid var(--border2)}
+.mbtn-save{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(67,97,238,.25)}
+.toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-10px);background:var(--text);color:#fff;padding:8px 16px;border-radius:20px;font-size:11px;font-weight:600;opacity:0;transition:all .2s;z-index:999;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+/* SHARE MODAL */
+.share-url{background:var(--bg);border:1.5px solid var(--border2);border-radius:8px;padding:10px 12px;font-family:'Courier New',monospace;font-size:11px;color:var(--muted);word-break:break-all;margin:10px 0}
+.qr-wrap{display:flex;justify-content:center;margin:12px 0}
+.share-btns{display:flex;gap:8px;flex-wrap:wrap}
+.share-btn{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;text-align:center;transition:all .15s}
+.share-btn:hover{border-color:var(--blue);color:var(--blue);background:#f0f4ff}
+@media(max-width:600px){.pw-wrap{flex-wrap:wrap}.row{flex-wrap:wrap}}
 </style>
 </head>
 <body>
-<div class="card">
-  <div class="logo">ROS</div>
-  <div class="show-name" id="showName">Run of Show</div>
-  <div class="show-sub" id="showSub">Loading event...</div>
-  <div class="label">Who are you?</div>
-  <div class="btn-group">
-    <button class="btn btn-collab" onclick="enter('collab')">
-      <div class="btn-icon">🏢</div>
-      <div class="btn-text">
-        <span class="btn-title">Colaborador</span>
-        <span class="btn-desc">Europalco / RISE team member</span>
-      </div>
-    </button>
-    <button class="btn btn-free" onclick="enter('free')">
-      <div class="btn-icon">🎛️</div>
-      <div class="btn-text">
-        <span class="btn-title">Freelancer</span>
-        <span class="btn-desc">External technician / crew</span>
-      </div>
-    </button>
-  </div>
-  <div class="divider"></div>
-  <div class="footer">View only &nbsp;·&nbsp; Updates every 5 seconds</div>
+<div class="topbar">
+  <div class="tb-logo">ROS</div>
+  <div class="tb-title">Run of Show</div>
+  <div class="tb-badge">Admin</div>
 </div>
+
+<div class="page">
+  <div class="sec">Shows</div>
+  <div id="showsList"><div class="loading"><div class="spin"></div>Loading...</div></div>
+  <button class="new-btn" onclick="openNew()" style="margin-top:8px">+ New show</button>
+
+  <div class="sec">Admin password</div>
+  <div class="card">
+    <div class="row">
+      <div class="row-info">
+        <div class="row-name">Admin password</div>
+        <div class="row-sub">Protects access to this admin page</div>
+      </div>
+      <div class="pw-wrap">
+        <input class="inp inp-pw" type="password" id="adminPwIn" placeholder="New password">
+        <button class="btn btn-blue" onclick="saveAdminPw()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New show modal -->
+<div class="modal-bg" id="newModal">
+<div class="modal">
+  <div class="mhdr"><h2>New show</h2><button class="mx" onclick="closeNew()">X</button></div>
+  <div class="mf"><label>Show name *</label><input class="mi" type="text" id="ns_name" placeholder="e.g. DHL Supply Chain 2026"></div>
+  <div class="mf"><label>Show ID *</label><input class="mi" type="text" id="ns_id" placeholder="e.g. DHL_2026"></div>
+  <div class="mf"><label>Date</label><input class="mi" type="date" id="ns_date"></div>
+  <div class="mfoot">
+    <button class="mbtn mbtn-cancel" onclick="closeNew()">Cancel</button>
+    <button class="mbtn mbtn-save" onclick="doCreate()">Create</button>
+  </div>
+</div>
+</div>
+
+<!-- Share modal -->
+<div class="modal-bg" id="shareModal">
+<div class="modal">
+  <div class="mhdr"><h2>Share viewer link</h2><button class="mx" onclick="closeShare()">X</button></div>
+  <div style="font-size:11px;color:var(--muted);margin-bottom:6px">Send this link to your crew. They choose Colaborador or Freelancer and see the live show.</div>
+  <div class="share-url" id="shareUrl">Generating...</div>
+  <div class="qr-wrap"><canvas id="qrCanvas" width="160" height="160"></canvas></div>
+  <div class="share-btns">
+    <button class="share-btn" onclick="copyShareUrl()">📋 Copy link</button>
+    <button class="share-btn" onclick="waShare()">💬 WhatsApp</button>
+  </div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-var params = {};
-var hash = window.location.hash.replace('#','');
-hash.split('&').forEach(function(p){
-  var kv = p.split('=');
-  if(kv[0]) params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]||'');
-});
-var SHEET_ID = params['sheet'] || '1JlKPuTyIIQJqtj6QExMbqacx9txMbUXQ32xfJj10z04';
-var SHOW_ID  = params['show']  || '';
-var GAS_URL  = params['gas']   || '';
+var GAS = (typeof google !== 'undefined' && google.script && google.script.run);
+var BASE_URL = '';
+var GITHUB = 'https://brunodomingos-maker.github.io/ros-viewer/';
+var currentShareUrl = '';
 
-// Try to load event name from sheet
-(function loadMeta(){
-  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet=data&callback=_metaCb&_='+Date.now();
-  window._metaCb = function(resp){
-    try{
-      var raw = resp.table.rows[0].c[0].v;
-      var data = JSON.parse(raw);
-      var name = (data.evtData && data.evtData.name) ? data.evtData.name : (data.name || SHOW_ID || 'Event');
-      var date = (data.evtData && data.evtData.date) ? data.evtData.date : '';
-      document.getElementById('showName').textContent = name;
-      document.getElementById('showSub').textContent = date ? date : 'Run of Show';
-    }catch(e){
-      document.getElementById('showSub').textContent = SHOW_ID || 'Run of Show';
-    }
-  };
-  var s = document.createElement('script');
-  s.onerror = function(){ document.getElementById('showSub').textContent = SHOW_ID || 'Run of Show'; };
-  s.src = url;
-  document.head.appendChild(s);
-})();
-
-function enter(role){
-  sessionStorage.setItem('ros_role', role);
-  var dest = 'viewer.html#sheet='+SHEET_ID+'&show='+SHOW_ID+'&gas='+GAS_URL;
-  window.location.href = dest;
+// Get deploy URL
+if (GAS) {
+  google.script.run
+    .withSuccessHandler(function(r){ if(r.ok) BASE_URL = r.url.split('?')[0]; })
+    .withFailureHandler(function(){})
+    .getDeployUrl();
 }
+
+document.getElementById('ns_name').addEventListener('input', function(){
+  document.getElementById('ns_id').value = this.value.replace(/[^a-zA-Z0-9]/g,'_').replace(/__+/g,'_').substring(0,30);
+});
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function loadShows() {
+  if (!GAS) { document.getElementById('showsList').innerHTML = '<div class="empty">Open via GAS URL</div>'; return; }
+  google.script.run
+    .withSuccessHandler(function(res){
+      if (!res.ok) { document.getElementById('showsList').innerHTML = '<div class="empty" style="color:var(--red)">'+esc(res.error)+'</div>'; return; }
+      renderShows(res.shows, res.passwords||{});
+    })
+    .withFailureHandler(function(e){ document.getElementById('showsList').innerHTML = '<div class="empty" style="color:var(--red)">'+esc(e.message)+'</div>'; })
+    .adminListShows();
+}
+
+function renderShows(shows, passwords) {
+  if (!shows.length) {
+    document.getElementById('showsList').innerHTML = '<div class="card"><div class="empty">No shows yet. Create one below.</div></div>';
+    return;
+  }
+  var h = '<div class="card">';
+  for (var i = 0; i < shows.length; i++) {
+    var s = shows[i];
+    var hasPw = !!passwords[s.id];
+    h += '<div class="row">' +
+      '<div class="row-info">' +
+        '<div class="row-name">'+esc(s.name)+'</div>' +
+        '<div class="row-sub">'+esc(s.id)+(s.date?' · '+esc(s.date):'')+'</div>' +
+      '</div>' +
+      '<span class="pw-badge '+(hasPw?'pw-set':'pw-none')+'">'+(hasPw?'Password set':'No password')+'</span>' +
+      '<div class="pw-wrap">' +
+        '<button class="btn btn-green" onclick="openShow(\''+esc(s.id)+'\')">Open</button>' +
+        '<button class="btn btn-blue" onclick="shareShow(\''+esc(s.id)+'\',\''+esc(s.name)+'\')">Share</button>' +
+        '<button class="btn btn-red" onclick="delShow(\''+esc(s.id)+'\',\''+esc(s.name)+'\')">Del</button>' +
+      '</div>' +
+    '</div>';
+  }
+  h += '</div>';
+  document.getElementById('showsList').innerHTML = h;
+}
+
+function openShow(id) {
+  var url = BASE_URL + '?page=editor&show=' + encodeURIComponent(id);
+  window.open(url, '_blank');
+}
+
+function shareShow(id, name) {
+  // Get public sheet ID then build viewer URL
+  if (!GAS) { showToast('GAS not available','err'); return; }
+  google.script.run
+    .withSuccessHandler(function(res){
+      var sheetId = res.ok ? res.sheetId : '1JlKPuTyIIQJqtj6QExMbqacx9txMbUXQ32xfJj10z04';
+      currentShareUrl = GITHUB + '?sheet=' + sheetId;
+      document.getElementById('shareUrl').textContent = currentShareUrl;
+      generateQR(currentShareUrl);
+      document.getElementById('shareModal').classList.add('open');
+    })
+    .withFailureHandler(function(){
+      currentShareUrl = GITHUB + '?sheet=1JlKPuTyIIQJqtj6QExMbqacx9txMbUXQ32xfJj10z04';
+      document.getElementById('shareUrl').textContent = currentShareUrl;
+      generateQR(currentShareUrl);
+      document.getElementById('shareModal').classList.add('open');
+    })
+    .getPublicSheetId();
+}
+
+function closeShare() { document.getElementById('shareModal').classList.remove('open'); }
+
+function copyShareUrl() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(currentShareUrl).then(function(){ showToast('Link copied!','ok'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = currentShareUrl;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Link copied!','ok');
+  }
+}
+
+function waShare() {
+  window.open('https://wa.me/?text=' + encodeURIComponent('Run of Show viewer: ' + currentShareUrl));
+}
+
+function delShow(id, name) {
+  if (!confirm('Delete "'+name+'"?')) return;
+  google.script.run
+    .withSuccessHandler(function(res){ if(res.ok){showToast('Deleted','ok');loadShows();}else showToast(res.error,'err'); })
+    .withFailureHandler(function(e){ showToast(e.message,'err'); })
+    .deleteShow(id);
+}
+
+function openNew() { document.getElementById('newModal').classList.add('open'); setTimeout(function(){document.getElementById('ns_name').focus();},100); }
+function closeNew() { document.getElementById('newModal').classList.remove('open'); }
+document.getElementById('newModal').addEventListener('click', function(e){ if(e.target===this)closeNew(); });
+document.getElementById('shareModal').addEventListener('click', function(e){ if(e.target===this)closeShare(); });
+
+function doCreate() {
+  var name = document.getElementById('ns_name').value.trim();
+  var id = document.getElementById('ns_id').value.trim();
+  var date = document.getElementById('ns_date').value;
+  if (!name||!id) { showToast('Name and ID required'); return; }
+  if (!GAS) return;
+  google.script.run
+    .withSuccessHandler(function(res){
+      if (!res.ok) { showToast(res.error,'err'); return; }
+      closeNew();
+      loadShows();
+      showToast('Show created','ok');
+      document.getElementById('ns_name').value='';
+      document.getElementById('ns_id').value='';
+      document.getElementById('ns_date').value='';
+    })
+    .withFailureHandler(function(e){ showToast(e.message,'err'); })
+    .createShow(id, name, date);
+}
+
+function saveAdminPw() {
+  var pw = document.getElementById('adminPwIn').value.trim();
+  if (!pw) { showToast('Enter a password'); return; }
+  if (!GAS) return;
+  google.script.run
+    .withSuccessHandler(function(res){ if(res.ok){showToast('Password saved','ok');document.getElementById('adminPwIn').value='';}else showToast(res.error,'err'); })
+    .withFailureHandler(function(e){ showToast(e.message,'err'); })
+    .setAdminPassword(pw);
+}
+
+function showToast(msg,type){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type?' '+type:'');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(function(){ t.classList.remove('show'); }, 2500);
+}
+
+// Simple QR code generator (pure JS, no external lib needed)
+function generateQR(url) {
+  var canvas = document.getElementById('qrCanvas');
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0,0,160,160);
+  ctx.fillStyle = '#1e2446';
+  ctx.font = '9px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('Scan with phone camera', 80, 80);
+  ctx.fillText('or copy the link above', 80, 95);
+  // Load QR via Google Charts API
+  var img = new Image();
+  img.onload = function(){ ctx.clearRect(0,0,160,160); ctx.drawImage(img,0,0,160,160); };
+  img.src = 'https://chart.googleapis.com/chart?chs=160x160&cht=qr&chl=' + encodeURIComponent(url) + '&choe=UTF-8';
+}
+
+loadShows();
 </script>
 </body>
 </html>
