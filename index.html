@@ -3,57 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Run of Show</title>
+<title>Run of Show — Live</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:#f5f6fa;font-family:'Inter','Segoe UI',system-ui,sans-serif;display:flex;align-items:center;justify-content:center}
-.card{background:#fff;border:1.5px solid rgba(30,40,100,.10);border-radius:18px;box-shadow:0 8px 32px rgba(30,40,100,.10);padding:40px 36px;width:360px;max-width:94vw;text-align:center}
-.logo{width:48px;height:48px;background:#4361ee;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;margin:0 auto 20px}
-.show-name{font-size:18px;font-weight:800;color:#0f1235;margin-bottom:4px}
-.show-sub{font-size:12px;color:#6b7280;margin-bottom:32px}
-.label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9ca3af;margin-bottom:14px}
-.btn-group{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
-.btn{width:100%;padding:14px 20px;border-radius:10px;border:1.5px solid transparent;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;transition:all .15s}
-.btn-collab{background:#f0f4ff;border-color:#c5d3fc;color:#3451d1}
-.btn-collab:hover{background:#e0e9ff;border-color:#4361ee}
-.btn-free{background:#f0fdf4;border-color:#a8e6c8;color:#1a7a4a}
-.btn-free:hover{background:#dcfce7;border-color:#2ec97e}
-.btn-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.btn-collab .btn-icon{background:#dde6ff}
-.btn-free .btn-icon{background:#d1fae5}
-.btn-text{flex:1}
-.btn-title{font-size:13px;font-weight:700;display:block}
-.btn-desc{font-size:11px;font-weight:400;opacity:.7;display:block;margin-top:1px}
-.divider{height:1px;background:rgba(30,40,100,.07);margin:20px 0}
-.footer{font-size:10px;color:#9ca3af;line-height:1.6}
+:root{--bg:#fff;--s1:#f8f9fc;--s2:#f0f2f9;--border:#e0e4f0;--text:#0f1235;--muted:#6b7280;--blue:#4361ee;--green:#2ec97e;--amber:#f5a623;--red:#e63946;--cyan:#22d3ee;--purple:#9b6bff}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,sans-serif;font-size:13px;overflow-x:hidden}
+
+/* TOPBAR */
+.topbar{height:52px;background:#fff;border-bottom:1.5px solid var(--border);box-shadow:0 1px 8px rgba(30,40,100,.06);display:flex;align-items:center;padding:0 16px;gap:12px;position:sticky;top:0;z-index:50}
+.tb-logo{height:28px;width:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;flex-shrink:0}
+.tb-title{font-size:14px;font-weight:800;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;flex-shrink:0}
+.badge-collab{background:#e0e9ff;color:#3451d1;border:1px solid #c5d3fc}
+.badge-free{background:#d1fae5;color:#1a7a4a;border:1px solid #a8e6c8}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+.tb-clock{font-size:13px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;flex-shrink:0}
+
+/* TABS */
+.tabs-bar{height:38px;background:var(--s1);border-bottom:1.5px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:6px;overflow-x:auto;flex-shrink:0}
+.tabs-bar::-webkit-scrollbar{display:none}
+.tab{padding:4px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;color:var(--muted);transition:all .15s}
+.tab.active{background:#fff;color:var(--blue);border:1.5px solid #c5d3fc;font-weight:700;box-shadow:0 1px 4px rgba(67,97,238,.08)}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;overflow-y:auto;flex:1;max-height:calc(100vh - 90px)}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead th{background:#eef0f8;padding:8px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:10}
+thead th:first-child{width:36px;text-align:center}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;position:relative}
+tbody tr:hover{background:#f8f9ff}
+tbody tr.active-row{background:#f0f4ff;border-left:3px solid var(--blue)}
+tbody tr.done-row{opacity:.45}
+tbody tr.section-row{background:#f0f4ff}
+td{padding:8px 10px;font-size:12px;vertical-align:middle}
+td.num{width:36px;text-align:center;font-size:10px;color:var(--muted);font-weight:600}
+td.name-cell{font-size:13px;font-weight:700;color:var(--text);min-width:180px}
+td.name-cell .speaker{font-size:10px;font-weight:400;color:var(--muted);margin-top:2px}
+td.time-cell{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:70px}
+td.dur-cell{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.dept-cell{font-size:11px;font-weight:600;white-space:nowrap}
+.dept-pill{display:inline-flex;align-items:center;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;border:1px solid transparent;margin-right:2px}
+.dp-snd{background:#fff4e6;color:#b45309;border-color:#fcd98a}
+.dp-lgt{background:#e8f0fe;color:#3451d1;border-color:#c5d3fc}
+.dp-vid{background:#f3eeff;color:#6d28d9;border-color:#ddd0ff}
+.dp-cam{background:#f0fdf4;color:#166534;border-color:#a8e6c8}
+.dp-stg{background:#f0fdf4;color:#1a7a4a;border-color:#a8e6c8}
+td.audio-cell{color:var(--amber);font-weight:600;font-size:11px}
+td.micro-cell{color:var(--cyan);font-weight:600;font-size:11px}
+td.video-cell{color:var(--purple);font-weight:600;font-size:11px}
+td.lights-cell{color:var(--blue);font-weight:600;font-size:11px}
+td.stage-cell{color:var(--green);font-weight:600;font-size:11px}
+td.screen-cell{font-size:11px;color:var(--text);font-weight:500}
+.link-btn{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:4px;background:#e8f0fe;color:var(--blue);font-size:10px;font-weight:700;text-decoration:none;border:1px solid #c5d3fc;transition:all .15s;cursor:pointer}
+.link-btn:hover{background:#c5d3fc}
+td.notes-cell{font-size:11px;color:var(--muted);max-width:160px}
+.section-label{font-size:12px;font-weight:800;color:var(--blue);text-transform:uppercase;letter-spacing:.05em;padding:6px 10px;background:#f0f4ff}
+
+/* PROGRESS BAR on row */
+tbody tr .row-bar{position:absolute;bottom:0;left:0;height:2px;background:var(--blue);opacity:.35;width:0;transition:width .5s linear;pointer-events:none}
+
+/* STATUS BAR */
+.statusbar{height:44px;background:#fff;border-top:1.5px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:10px;position:sticky;bottom:0;box-shadow:0 -2px 8px rgba(30,40,100,.06)}
+.sb-cue{font-size:11px;font-weight:700;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-timer{font-size:14px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;padding:0 10px;background:var(--s1);border-radius:6px;border:1px solid var(--border);height:30px;display:flex;align-items:center}
+.sb-timer.warn{background:#fff8ed;color:var(--amber);border-color:#fce0a8;animation:sbpulse 1s infinite}
+.sb-timer.over{background:#ffeef0;color:var(--red);border-color:#ffc9cd;animation:sbpulse .5s infinite}
+@keyframes sbpulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* EMPTY */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:12px;color:var(--muted)}
+.empty-state .big{font-size:36px}
+.empty-state .msg{font-size:14px;font-weight:600}
+.empty-state .sub{font-size:12px;opacity:.7}
+
+/* MOBILE */
+@media(max-width:767px){
+  table,thead,tbody,th,td,tr{display:block}
+  thead{display:none}
+  tbody tr.section-row .section-label{font-size:13px;padding:10px 14px}
+  tbody tr{padding:10px 14px;border-radius:0;margin:0}
+  tbody tr.active-row{border-left:4px solid var(--blue)}
+  td{padding:2px 0;border:none}
+  td.num{display:none}
+  td.name-cell{font-size:14px;font-weight:800;padding-bottom:4px}
+  td.time-cell{display:inline;font-size:12px;padding-right:8px}
+  td.dur-cell{display:inline;font-size:11px}
+  td.dept-cell,.audio-cell,.micro-cell,.video-cell,.lights-cell,.stage-cell{display:inline-block;margin-right:6px}
+  td.screen-cell,td.notes-cell{display:block;margin-top:4px}
+  .table-wrap{max-height:calc(100vh - 128px)}
+}
 </style>
-</head>
+<style>
+.login-overlay{position:fixed;inset:0;background:#f5f6fa;z-index:9999;display:flex;align-items:center;justify-content:center}
+.login-card{background:#fff;border:1.5px solid rgba(30,40,100,.10);border-radius:18px;box-shadow:0 8px 32px rgba(30,40,100,.10);padding:40px 36px;width:360px;max-width:94vw;text-align:center}
+.login-logo{width:48px;height:48px;background:#4361ee;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;margin:0 auto 20px}
+.login-title{font-size:18px;font-weight:800;color:#0f1235;margin-bottom:4px}
+.login-sub{font-size:12px;color:#6b7280;margin-bottom:32px}
+.login-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9ca3af;margin-bottom:14px}
+.login-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.lbtn{width:100%;padding:14px 20px;border-radius:10px;border:1.5px solid transparent;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;text-align:left;transition:all .15s}
+.lbtn-collab{background:#f0f4ff;border-color:#c5d3fc;color:#3451d1}
+.lbtn-collab:hover{background:#e0e9ff;border-color:#4361ee}
+.lbtn-free{background:#f0fdf4;border-color:#a8e6c8;color:#1a7a4a}
+.lbtn-free:hover{background:#dcfce7;border-color:#2ec97e}
+.lbtn-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.lbtn-collab .lbtn-icon{background:#dde6ff}
+.lbtn-free .lbtn-icon{background:#d1fae5}
+.lbtn-text{flex:1}
+.lbtn-title{font-size:13px;font-weight:700;display:block}
+.lbtn-desc{font-size:11px;font-weight:400;opacity:.7;display:block;margin-top:1px}
+.login-divider{height:1px;background:rgba(30,40,100,.07);margin:20px 0}
+.login-footer{font-size:10px;color:#9ca3af;line-height:1.6}
+</style>
 <body>
-<div class="card">
-  <div class="logo">ROS</div>
-  <div class="show-name" id="showName">Run of Show</div>
-  <div class="show-sub" id="showSub">Loading event...</div>
-  <div class="label">Who are you?</div>
-  <div class="btn-group">
-    <button class="btn btn-collab" onclick="enter('collab')">
-      <div class="btn-icon">🏢</div>
-      <div class="btn-text">
-        <span class="btn-title">Colaborador</span>
-        <span class="btn-desc">Europalco / RISE team member</span>
-      </div>
-    </button>
-    <button class="btn btn-free" onclick="enter('free')">
-      <div class="btn-icon">🎛️</div>
-      <div class="btn-text">
-        <span class="btn-title">Freelancer</span>
-        <span class="btn-desc">External technician / crew</span>
-      </div>
-    </button>
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">ROS</div>
+    <div class="login-title" id="loginTitle">Run of Show</div>
+    <div class="login-sub" id="loginSub">Loading event...</div>
+    <div class="login-label">Who are you?</div>
+    <div class="login-btns">
+      <button class="lbtn lbtn-collab" onclick="enterViewer('collab')">
+        <div class="lbtn-icon">🏢</div>
+        <div class="lbtn-text">
+          <span class="lbtn-title">Colaborador</span>
+          <span class="lbtn-desc">Europalco / RISE team member</span>
+        </div>
+      </button>
+      <button class="lbtn lbtn-free" onclick="enterViewer('free')">
+        <div class="lbtn-icon">🎛️</div>
+        <div class="lbtn-text">
+          <span class="lbtn-title">Freelancer</span>
+          <span class="lbtn-desc">External technician / crew</span>
+        </div>
+      </button>
+    </div>
+    <div class="login-divider"></div>
+    <div class="login-footer">View only &nbsp;·&nbsp; Updates every 5 seconds</div>
   </div>
-  <div class="divider"></div>
-  <div class="footer">View only &nbsp;·&nbsp; Updates every 5 seconds</div>
 </div>
+
+<div class="topbar">
+  <div class="tb-logo">ROS</div>
+  <div class="tb-title" id="tbTitle">Loading...</div>
+  <span class="tb-badge" id="roleBadge"></span>
+  <div class="tb-dot"></div>
+  <div class="tb-clock" id="tbClock">--:--:--</div>
+</div>
+
+<div class="tabs-bar" id="tabsBar"></div>
+
+<div class="table-wrap" id="tableWrap">
+  <div class="empty-state">
+    <div class="big">⏳</div>
+    <div class="msg">Loading show data...</div>
+    <div class="sub">Connecting to live feed</div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <div class="sb-cue" id="sbCue">—</div>
+  <div class="sb-timer" id="sbTimer">00:00:00</div>
+</div>
+
 <script>
+// ─── PARAMS ────────────────────────────────────────────────
 var params = {};
 var hash = window.location.hash.replace('#','');
 hash.split('&').forEach(function(p){
@@ -61,34 +176,317 @@ hash.split('&').forEach(function(p){
   if(kv[0]) params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]||'');
 });
 var SHEET_ID = params['sheet'] || '1JlKPuTyIIQJqtj6QExMbqacx9txMbUXQ32xfJj10z04';
-var SHOW_ID  = params['show']  || '';
-var GAS_URL  = params['gas']   || '';
+var ROLE = sessionStorage.getItem('ros_role') || 'collab';
 
-// Try to load event name from sheet
-(function loadMeta(){
-  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet=data&callback=_metaCb&_='+Date.now();
-  window._metaCb = function(resp){
+// Set badge
+var badge = document.getElementById('roleBadge');
+badge.textContent = ROLE === 'collab' ? 'Colaborador' : 'Freelancer';
+badge.className = 'tb-badge ' + (ROLE === 'collab' ? 'badge-collab' : 'badge-free');
+
+// ─── STATE ─────────────────────────────────────────────────
+var days = [];
+var screenNames = ['Screen 1','Screen 2','Screen 3','Screen 4'];
+var currentDay = 0;
+var activeIdx = -1;
+var cueStart = null;
+var timerInterval = null;
+var pollInterval = null;
+
+// ─── CLOCK ─────────────────────────────────────────────────
+function padZ(n){ return n < 10 ? '0'+n : String(n); }
+function clockTick(){
+  var d = new Date();
+  document.getElementById('tbClock').textContent = padZ(d.getHours())+':'+padZ(d.getMinutes())+':'+padZ(d.getSeconds());
+}
+setInterval(clockTick, 1000); clockTick();
+
+// ─── FETCH ─────────────────────────────────────────────────
+function fetchData(){
+  var cb = '_cb_' + Date.now();
+  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet=data&callback='+cb+'&_='+Date.now();
+  window[cb] = function(resp){
+    try{
+      delete window[cb];
+      var rows = resp.table.rows;
+      if(!rows||!rows.length){showError('No data in sheet yet. Ask the show caller to press Save.');return;}
+      var combined = '';
+      for(var i=0;i<rows.length;i++){
+        var v = rows[i].c && rows[i].c[0] && rows[i].c[0].v;
+        if(v) combined += String(v);
+      }
+      var data = JSON.parse(combined);
+      processData(data);
+    }catch(e){ showError('Error reading data: '+e.message); }
+  };
+  var s = document.createElement('script');
+  s.onerror = function(){ delete window[cb]; showError('Cannot reach sheet. Check connection.'); };
+  s.src = url;
+  document.head.appendChild(s);
+}
+
+function processData(data){
+  if(data.evtData && data.evtData.name){
+    document.getElementById('tbTitle').textContent = data.evtData.name;
+    document.title = data.evtData.name + ' — Live';
+  }
+  if(data.screenNames && data.screenNames.length) screenNames = data.screenNames;
+  if(data.days && data.days.length){
+    days = data.days;
+  } else if(Array.isArray(data)){
+    days = [{id:'day_1',label:'Day 1',rows:data}];
+  }
+  renderTabs();
+  renderTable();
+  autoActiveCue();
+}
+
+function showError(msg){
+  document.getElementById('tableWrap').innerHTML = '<div class="empty-state"><div class="big">⚠️</div><div class="msg">'+msg+'</div></div>';
+}
+
+// ─── TABS ──────────────────────────────────────────────────
+function renderTabs(){
+  var bar = document.getElementById('tabsBar');
+  if(days.length <= 1){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  var h = '';
+  for(var i=0;i<days.length;i++){
+    h += '<div class="tab'+(i===currentDay?' active':'')+'" onclick="switchDay('+i+')">'+esc(days[i].label||('Day '+(i+1)))+'</div>';
+  }
+  bar.innerHTML = h;
+}
+
+function switchDay(idx){
+  currentDay = idx;
+  renderTabs();
+  renderTable();
+  autoActiveCue();
+}
+
+// ─── TABLE ─────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderTable(){
+  var rows = days[currentDay] ? days[currentDay].rows : [];
+  if(!rows||!rows.length){
+    document.getElementById('tableWrap').innerHTML = '<div class="empty-state"><div class="big">📋</div><div class="msg">No cues yet</div><div class="sub">The editor will add items</div></div>';
+    return;
+  }
+  var sn = screenNames;
+  var h = '<table><thead><tr>'+
+    '<th>#</th><th>Item</th><th>Start</th><th>Dur.</th>'+
+    '<th>Dept</th><th style="color:var(--amber)">Audio</th>'+
+    '<th style="color:var(--cyan)">Micro</th><th style="color:var(--purple)">Video</th>'+
+    '<th style="color:var(--blue)">Lights</th><th style="color:var(--green)">Stage</th>'+
+    '<th>'+esc(sn[0]||'Screen 1')+'</th><th>'+esc(sn[1]||'Screen 2')+'</th>'+
+    '<th>'+esc(sn[2]||'Screen 3')+'</th><th>'+esc(sn[3]||'Screen 4')+'</th>'+
+    '<th>Notes</th></tr></thead><tbody>';
+  var n = 0;
+  for(var i=0;i<rows.length;i++){
+    var r = rows[i];
+    if(r.type==='section'){
+      h += '<tr class="section-row"><td colspan="15"><div class="section-label">'+esc(r.name)+'</div></td></tr>';
+      continue;
+    }
+    n++;
+    var isActive = (i === activeIdx);
+    var isDone = isActive ? false : isDoneRow(r);
+    h += '<tr class="'+(isActive?'active-row':'')+(isDone?' done-row':'')+'" id="vrow_'+i+'" onclick="setActive('+i+')">';
+    h += '<td class="num">'+n+'</td>';
+    h += '<td class="name-cell"><div>'+esc(r.name||'')+'</div>'+(r.speaker?'<div class="speaker">'+esc(r.speaker)+'</div>':'')+'</td>';
+    h += '<td class="time-cell">'+esc(r.start||'—')+'</td>';
+    h += '<td class="dur-cell">'+formatDur(r.dur)+'</td>';
+    // Dept pills
+    var depts = r.depts || [];
+    var depH = '';
+    for(var d=0;d<depts.length;d++){
+      var dc = depts[d];
+      var cls = dc==='SND'?'dp-snd':dc==='LGT'?'dp-lgt':dc==='VID'?'dp-vid':dc==='CAM'?'dp-cam':'dp-stg';
+      depH += '<span class="dept-pill '+cls+'">'+esc(dc)+'</span>';
+    }
+    h += '<td class="dept-cell">'+depH+'</td>';
+    h += '<td class="audio-cell">'+esc(r.audio||'')+'</td>';
+    h += '<td class="micro-cell">'+esc(r.slides||'')+(r.pptPages?'<br><span style="font-size:10px;color:var(--muted)">📄 '+esc(r.pptPages)+' slides</span>':'')+'</td>';
+    h += '<td class="video-cell">'+esc(r.video||'')+(r.vidDur?'<br><span style="font-size:10px;color:var(--muted)">▶ '+esc(r.vidDur)+'</span>':'')+'</td>';
+    h += '<td class="lights-cell">'+esc(r.lights||'')+'</td>';
+    h += '<td class="stage-cell">'+esc(r.furniture||'')+'</td>';
+    // Screens
+    for(var s=0;s<4;s++){
+      var sc = r['sc'+s]||'';
+      var scUrl = r['sc'+s+'url']||'';
+      h += '<td class="screen-cell">'+esc(sc)+(scUrl?'<br><a class="link-btn" href="'+esc(scUrl)+'" target="_blank">↙ Download</a>':'')+'</td>';
+    }
+    h += '<td class="notes-cell">'+esc(r.comments||'')+'</td>';
+    h += '<div class="row-bar" id="bar_'+i+'"></div>';
+    h += '</tr>';
+  }
+  h += '</tbody></table>';
+  document.getElementById('tableWrap').innerHTML = h;
+  updateBars();
+}
+
+function formatDur(d){
+  if(!d && d!==0) return '—';
+  var m = parseInt(d,10)||0;
+  var h = Math.floor(m/60), mn = m%60;
+  return padZ(h)+':'+padZ(mn)+':00';
+}
+
+function isDoneRow(r){
+  if(!r.start) return false;
+  var now = new Date();
+  var parts = r.start.split(':');
+  var rh = parseInt(parts[0],10)||0, rm = parseInt(parts[1],10)||0;
+  var rEnd = (rh*60+rm+(parseInt(r.dur,10)||0));
+  var nowM = now.getHours()*60+now.getMinutes();
+  return nowM > rEnd;
+}
+
+function setActive(idx){ activeIdx = idx; renderTable(); scrollToActive(); startTimer(); }
+
+function autoActiveCue(){
+  var rows = days[currentDay] ? days[currentDay].rows : [];
+  var now = new Date();
+  var nowM = now.getHours()*60+now.getMinutes();
+  var found = -1;
+  for(var i=0;i<rows.length;i++){
+    var r = rows[i];
+    if(r.type==='section'||!r.start) continue;
+    var parts = r.start.split(':');
+    var rh = parseInt(parts[0],10)||0, rm = parseInt(parts[1],10)||0;
+    var startM = rh*60+rm;
+    var endM = startM+(parseInt(r.dur,10)||15);
+    if(nowM >= startM && nowM < endM){ found = i; break; }
+  }
+  if(found >= 0 && found !== activeIdx){ activeIdx = found; renderTable(); scrollToActive(); startTimer(); }
+}
+
+function scrollToActive(){
+  var el = document.getElementById('vrow_'+activeIdx);
+  if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function updateBars(){
+  var rows = days[currentDay] ? days[currentDay].rows : [];
+  var now = new Date();
+  var nowM = now.getHours()*60+now.getMinutes()+(now.getSeconds()/60);
+  for(var i=0;i<rows.length;i++){
+    var bar = document.getElementById('bar_'+i);
+    if(!bar) continue;
+    var r = rows[i];
+    if(i !== activeIdx || !r.start){ bar.style.width='0'; continue; }
+    var parts = r.start.split(':');
+    var rh = parseInt(parts[0],10)||0, rm = parseInt(parts[1]||0,10)||0;
+    var startM = rh*60+rm;
+    var dur = parseInt(r.dur,10)||15;
+    var pct = Math.min(100, Math.max(0, (nowM-startM)/dur*100));
+    bar.style.width = pct+'%';
+  }
+}
+
+// ─── TIMER ─────────────────────────────────────────────────
+function startTimer(){
+  if(!cueStart || activeIdx !== _lastTimerIdx) cueStart = Date.now();
+  _lastTimerIdx = activeIdx;
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(timerTick, 1000);
+}
+var _lastTimerIdx = -1;
+function timerTick(){
+  if(activeIdx < 0){ clearInterval(timerInterval); return; }
+  var rows = days[currentDay] ? days[currentDay].rows : [];
+  var r = rows[activeIdx];
+  if(!r){ clearInterval(timerInterval); return; }
+  var elapsed = Math.floor((Date.now()-cueStart)/1000);
+  var totalSec = (parseInt(r.dur,10)||0)*60;
+  var remaining = totalSec - elapsed;
+  var display;
+  if(elapsed <= totalSec){
+    var h = Math.floor(elapsed/3600), m = Math.floor((elapsed%3600)/60), s = elapsed%60;
+    display = padZ(h)+':'+padZ(m)+':'+padZ(s);
+  } else {
+    var over = Math.abs(remaining);
+    var h = Math.floor(over/3600), m = Math.floor((over%3600)/60), s = over%60;
+    display = '+'+padZ(h)+':'+padZ(m)+':'+padZ(s);
+  }
+  var tb = document.getElementById('sbTimer');
+  tb.textContent = display;
+  var warnSec = 60;
+  if(remaining < 0) tb.className='sb-timer over';
+  else if(remaining <= warnSec) tb.className='sb-timer warn';
+  else tb.className='sb-timer';
+  document.getElementById('sbCue').textContent = r.name || '—';
+  updateBars();
+}
+
+// ─── POLL ──────────────────────────────────────────────────
+fetchData();
+pollInterval = setInterval(fetchData, 5000);
+setInterval(function(){ autoActiveCue(); updateBars(); }, 10000);
+</script>
+<script>
+// ─── LOGIN OVERLAY ──────────────────────────────────────
+var params = {};
+var search = window.location.search.replace('?','');
+search.split('&').forEach(function(p){
+  var kv = p.split('=');
+  if(kv[0]) params[decodeURIComponent(kv[0])] = decodeURIComponent(kv[1]||'');
+});
+var SHEET_ID_L = params['sheet'] || '1JlKPuTyIIQJqtj6QExMbqacx9txMbUXQ32xfJj10z04';
+
+// Override SHEET_ID from viewer.html with the one from URL
+if(typeof SHEET_ID !== 'undefined') SHEET_ID = SHEET_ID_L;
+
+// Check if already logged in
+var savedRole = sessionStorage.getItem('ros_role');
+if(savedRole){
+  document.getElementById('loginOverlay').style.display = 'none';
+  startViewer(savedRole);
+} else {
+  // Load event name
+  loadLoginMeta();
+}
+
+function loadLoginMeta(){
+  var url = 'https://docs.google.com/spreadsheets/d/'+SHEET_ID_L+'/gviz/tq?tqx=out:json&sheet=data&callback=_lmetaCb&_='+Date.now();
+  window._lmetaCb = function(resp){
     try{
       var raw = resp.table.rows[0].c[0].v;
       var data = JSON.parse(raw);
-      var name = (data.evtData && data.evtData.name) ? data.evtData.name : (data.name || SHOW_ID || 'Event');
+      var name = (data.evtData && data.evtData.name) ? data.evtData.name : (data.name || 'Event');
       var date = (data.evtData && data.evtData.date) ? data.evtData.date : '';
-      document.getElementById('showName').textContent = name;
-      document.getElementById('showSub').textContent = date ? date : 'Run of Show';
+      document.getElementById('loginTitle').textContent = name;
+      document.getElementById('loginSub').textContent = date || 'Run of Show';
     }catch(e){
-      document.getElementById('showSub').textContent = SHOW_ID || 'Run of Show';
+      document.getElementById('loginSub').textContent = 'Run of Show';
     }
   };
   var s = document.createElement('script');
-  s.onerror = function(){ document.getElementById('showSub').textContent = SHOW_ID || 'Run of Show'; };
+  s.onerror = function(){ document.getElementById('loginSub').textContent = 'Run of Show'; };
   s.src = url;
   document.head.appendChild(s);
-})();
+}
 
-function enter(role){
+function enterViewer(role){
   sessionStorage.setItem('ros_role', role);
-  var dest = 'viewer.html#sheet='+SHEET_ID+'&show='+SHOW_ID+'&gas='+GAS_URL;
-  window.location.href = dest;
+  document.getElementById('loginOverlay').style.display = 'none';
+  startViewer(role);
+}
+
+function startViewer(role){
+  // Set badge
+  var badge = document.getElementById('roleBadge');
+  if(badge){
+    badge.textContent = role === 'collab' ? 'Colaborador' : 'Freelancer';
+    badge.className = 'tb-badge ' + (role === 'collab' ? 'badge-collab' : 'badge-free');
+  }
+  // Override SHEET_ID and start fetching
+  if(typeof SHEET_ID !== 'undefined') SHEET_ID = SHEET_ID_L;
+  if(typeof fetchData === 'function'){
+    fetchData();
+    if(typeof pollInterval !== 'undefined') pollInterval = setInterval(fetchData, 5000);
+    setInterval(function(){ if(typeof autoActiveCue==='function')autoActiveCue(); if(typeof updateBars==='function')updateBars(); }, 10000);
+  }
 }
 </script>
 </body>
