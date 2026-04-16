@@ -419,10 +419,7 @@ function timerTick(){
   updateBars();
 }
 
-// ─── POLL ──────────────────────────────────────────────────
-fetchData();
-pollInterval = setInterval(fetchData, 5000);
-setInterval(function(){ autoActiveCue(); updateBars(); }, 10000);
+// POLL started by startViewer() after login
 </script>
 <script>
 // ─── LOGIN OVERLAY ──────────────────────────────────────
