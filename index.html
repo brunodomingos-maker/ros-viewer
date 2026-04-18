@@ -359,7 +359,8 @@ function fetchMsg(){
       if(ln.indexOf('"__cue__"')!==-1){
         try{
           var cue=JSON.parse(ln);
-          if(cue.__cue__!==undefined) syncLiveCue(cue);
+          console.log('CUE PAYLOAD DETECTED:', ln);
+          syncLiveCue(cue);
         }catch(e){}
         return;
       }
@@ -371,21 +372,30 @@ function fetchMsg(){
 }
 
 function syncLiveCue(cue){
+  console.log('syncLiveCue received:', JSON.stringify(cue), 'rows available:', rows.length, 'day:', currentDay);
   // Switch day if needed
   if(cue.__day__!==undefined && cue.__day__!==currentDay && days[cue.__day__]){
     currentDay=cue.__day__;
     rows=days[currentDay].rows||[];
     renderTabs();
   }
-  // Find the live cue by ID — check if it actually changed
   var newIdx=-1;
   if(cue.__cue__){
+    // Try match by row ID first
     for(var i=0;i<rows.length;i++){
       if(rows[i].id===cue.__cue__){newIdx=i;break;}
     }
+    // Fallback: use item index (position among non-sec items)
+    if(newIdx===-1 && cue.__idx__>=0){
+      var itemCount=0;
+      for(var i=0;i<rows.length;i++){
+        if(rows[i].type==='sec')continue;
+        if(itemCount===cue.__idx__){newIdx=i;break;}
+        itemCount++;
+      }
+    }
   }
-  var cueChanged = newIdx !== liveIdx;
-  liveIdx = newIdx;
+  liveIdx=newIdx;
   render();
   // No forced scroll — user scrolls freely
 }
