@@ -202,7 +202,10 @@ function fetchData(){
   window[cbName]=function(data){
     try{delete window[cbName];}catch(e){}
     if(dot)dot.style.background='var(--green)';
-    document.getElementById('stSync').textContent='sync '+new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    var syncInfo='sync '+new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    if(data.liveCue)syncInfo+=' | cue activa';
+    if(data.liveDay!==undefined)syncInfo+=' | dia '+(parseInt(data.liveDay)+1);
+    document.getElementById('stSync').textContent=syncInfo;
     if(data&&data.ok)processData(data);
     else if(firstLoad)document.getElementById('loadMsg').textContent='Sem dados.';
   };
@@ -222,7 +225,7 @@ function processData(data){
     if(!parsed)return;
     if(parsed.days&&parsed.days.length){
       days=parsed.days;
-      var newDay=typeof data.liveDay==='number'?data.liveDay:currentDay;
+      var newDay=(data.liveDay!==undefined&&data.liveDay!==null)?parseInt(data.liveDay):currentDay;
       if(newDay!==currentDay&&days[newDay]){currentDay=newDay;}
       if(!days[currentDay])currentDay=0;
       rows=days[currentDay].rows||[];
