@@ -169,8 +169,18 @@ function getParams(){
 
 // ── ZOOM ────────────────────────────────────────────────────────────────────
 function applyZoom(){
-  document.getElementById('rosTable').style.fontSize=tableZoom+'%';
-  document.getElementById('zoomVal').textContent=tableZoom+'%';
+  var scale = tableZoom / 100;
+  var wrap = document.getElementById('tableWrap');
+  var table = document.getElementById('rosTable');
+  if(wrap && table){
+    // Scale entire table content with transform for true zoom
+    table.style.transformOrigin = 'top left';
+    table.style.transform = 'scale('+scale+')';
+    // Adjust wrapper height to match scaled content
+    table.style.width = (100/scale)+'%';
+    wrap.style.overflowX = scale < 1 ? 'hidden' : 'auto';
+  }
+  document.getElementById('zoomVal').textContent = tableZoom+'%';
 }
 function zoomIn(){var nx=null;for(var i=0;i<ZOOM_STEPS.length;i++){if(ZOOM_STEPS[i]>tableZoom){nx=ZOOM_STEPS[i];break;}}if(nx){tableZoom=nx;applyZoom();}}
 function zoomOut(){var pv=null;for(var i=ZOOM_STEPS.length-1;i>=0;i--){if(ZOOM_STEPS[i]<tableZoom){pv=ZOOM_STEPS[i];break;}}if(pv){tableZoom=pv;applyZoom();}}
