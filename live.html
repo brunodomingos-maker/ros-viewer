@@ -60,6 +60,11 @@ td{padding:0;vertical-align:top;border-bottom:1px solid rgba(30,40,100,.07)}
 .spin{width:26px;height:26px;border:2.5px solid rgba(30,40,100,.15);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){.hide-mob{display:none}.timers{gap:10px}.timer-val{font-size:14px}}
+.flash{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity .25s;z-index:9999;padding:20px}
+.flash.show{opacity:1}
+.flash span{background:rgba(15,18,53,.96);color:#fff;padding:30px 56px;border-radius:20px;font-size:42px;font-weight:900;letter-spacing:.01em;text-align:center;max-width:92vw;box-shadow:0 16px 70px rgba(0,0,0,.45);animation:flashpop .25s ease-out}
+@keyframes flashpop{from{transform:scale(.85)}to{transform:scale(1)}}
+@media(max-width:600px){.flash span{font-size:30px;padding:24px 36px}}
 </style>
 </head>
 <body>
@@ -127,6 +132,8 @@ td{padding:0;vertical-align:top;border-bottom:1px solid rgba(30,40,100,.07)}
   </div>
 </div>
 
+<div class="flash" id="flashEl"><span id="flashTxt"></span></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
@@ -142,6 +149,7 @@ var GAS_URL = '', SHOW_ID = '';
 var rows = [], days = [], currentDay = 0, liveCue = null, liveItemStart = null;
 var firstLoad = true, tableZoom = 100, _lastDataVer = null, _rt = false;
 var _lastSeq = -1, _pollTimer = null, _fbConnected = false, _offlineSince = 0, _heartbeat = null;
+var _lastMsgTs = 0;
 var POLL_MS = 3000;                 // ritmo do fallback quando a Firebase nao esta a chegar
 var FALLBACK_AFTER_MS = 8000;       // tempo offline antes de ligar o polling de seguranca
 var colVis = { dur: true, start: true, audio: true, video: true, lights: true, furniture: true, notes: true };
@@ -190,6 +198,17 @@ function applyColVis(){
     var els=document.querySelectorAll('.col-'+keys[k]);
     for(var e=0;e<els.length;e++)els[e].style.display=colVis[keys[k]]?'':'none';
   }
+}
+
+// ── MENSAGENS DO SHOW CALLER (flash no ecra) ─────────────────────────────────
+function showFlash(text){
+  if(!text)return;
+  var el=document.getElementById('flashEl'),txt=document.getElementById('flashTxt');
+  if(!el||!txt)return;
+  txt.textContent=text;
+  el.classList.add('show');
+  clearTimeout(window._flashT);
+  window._flashT=setTimeout(function(){el.classList.remove('show');},4500);
 }
 
 // ── INDICADOR DE SINCRONIZACAO ───────────────────────────────────────────────
@@ -276,6 +295,22 @@ function startRealtime(){
         var v=snap.val();
         if(v)applyLive(v);
       },function(){setSync('disconnected');startFallbackPolling();});
+
+      // mensagens do show caller (Coffee break, Stand by, etc.)
+      var _msgFirst=true;
+      var msgRef=firebase.database().ref('shows/'+SHOW_ID+'/live/msg');
+      msgRef.on('value',function(snap){
+        var m=snap.val();
+        if(!m||!m.ts)return;
+        if(_msgFirst){
+          _msgFirst=false;_lastMsgTs=m.ts;
+          if(Date.now()-m.ts<10000)showFlash(m.text||'');  // mostra so se for recente ao abrir
+          return;
+        }
+        if(m.ts<=_lastMsgTs)return;
+        _lastMsgTs=m.ts;
+        showFlash(m.text||'');
+      });
 
       _rt=true;
 
