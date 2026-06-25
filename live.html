@@ -478,6 +478,41 @@ function infoPairs(it){
 function ctxLine(it,num){
   return '<div style="font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--muted);text-transform:uppercase;margin-bottom:6px">A decorrer · Cue '+num+' · '+esc(it.name||'')+' · '+(it.start||'--:--')+' · <span id="now_rem">falta '+fmtDur(it.dur)+'</span></div>';
 }
+function previewMeta(it){
+  if(!it||!it.start)return 'a seguir no alinhamento';
+  var p=it.start.split(':');var sm=parseInt(p[0]||0)*60+parseInt(p[1]||0);
+  var now=new Date();var nm=now.getHours()*60+now.getMinutes();
+  var diff=sm-nm;
+  if(diff>0&&diff<600)return 'começa às '+it.start+' · daqui a '+diff+' min';
+  return 'começa às '+it.start;
+}
+function cueCardFull(it,num,kind,acc){
+  var isLive=(kind==='live');
+  var accent=isLive?acc:'#c77f0a';
+  var badge=isLive
+    ?'<span style="font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 9px;border-radius:99px;background:#e3fbef;color:#127a48">AO VIVO</span>'
+    :'<span style="font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 9px;border-radius:99px;background:#fbeed2;color:#8a560a">PREVIEW</span>';
+  var info=infoPairs(it).map(function(p){return '<div style="min-width:108px;flex:1 1 108px"><div style="font-size:11px;color:var(--muted)">'+p[0]+'</div><div style="font-size:15px;font-weight:700">'+esc(p[1])+'</div></div>';}).join('');
+  var chips=codeChips(it.depts);
+  var h='<div class="card'+(isLive?' now':'')+'" style="margin:0;border-left:6px solid '+accent+(isLive?'':';background:#fffdf9;border-color:rgba(199,127,10,.35)')+'">';
+  h+='<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">';
+  h+='<div style="display:flex;gap:11px;align-items:flex-start;min-width:0">';
+  h+='<div class="numbadge" style="background:'+accent+'1a;color:'+accent+'">'+(num||'–')+'</div>';
+  h+='<div style="min-width:0">'+badge+'<div style="font-size:22px;font-weight:800;line-height:1.15;margin-top:5px">'+esc(it.name||'')+'</div>'+(it.speaker?'<div style="font-size:13px;color:var(--muted);margin-top:2px">'+esc(it.speaker)+'</div>':'')+'</div>';
+  h+='</div>';
+  h+='<div style="text-align:right;flex-shrink:0;font-family:Courier New,monospace"><div style="font-size:20px;font-weight:800">'+(it.start||'--:--')+'</div><div style="font-size:12px;color:var(--muted)">'+fmtDur(it.dur)+'</div></div>';
+  h+='</div>';
+  if(isLive){
+    h+='<div class="prog-bar" style="margin:13px 0 4px"><div class="prog-fill" id="pf_live" style="width:'+nowPct(it)+'%"></div></div>';
+    h+='<div style="text-align:right;font-size:12px;color:var(--muted);font-family:Courier New,monospace"><span id="now_rem">falta '+fmtDur(it.dur)+'</span></div>';
+  } else {
+    h+='<div style="margin:12px 0 2px;font-size:12px;color:#8a560a;font-weight:600">'+previewMeta(it)+'</div>';
+  }
+  if(chips)h+='<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">'+chips+'</div>';
+  if(info)h+='<div style="display:flex;flex-wrap:wrap;gap:12px 14px;border-top:1px solid var(--border);margin-top:12px;padding-top:12px">'+info+'</div>';
+  h+='</div>';
+  return h;
+}
 function renderCaller(){
   var items=itemsList();
   if(!items.length){document.getElementById('cardWrap').innerHTML='<div class="cards"><div class="card" style="text-align:center;color:var(--muted)">Sem items neste dia.</div></div>';return;}
@@ -486,41 +521,16 @@ function renderCaller(){
   var nowIt=li>=0?items[li]:null;
   var nextIt=li>=0?items[li+1]:items[0];
   var nowNum=li>=0?li+1:0;
+  var nextNum=li>=0?li+2:1;
   var h='<div class="cards">';
 
-  h+='<div class="clabel">A decorrer</div>';
-  if(nowIt){
-    var acc=sc[nowIt.id]||'#4361ee';
-    var info=infoPairs(nowIt).map(function(p){return '<div style="min-width:120px;flex:1"><div style="font-size:11px;color:var(--muted)">'+p[0]+'</div><div style="font-size:15px;font-weight:700">'+esc(p[1])+'</div></div>';}).join('');
-    h+='<div class="card now" style="border-left:6px solid '+acc+'">';
-    h+='<div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start">';
-    h+='<div style="display:flex;gap:13px;align-items:flex-start;min-width:0">';
-    h+='<div class="numbadge" style="background:'+acc+'1a;color:'+acc+'">'+nowNum+'</div>';
-    h+='<div style="min-width:0"><div style="font-size:26px;font-weight:800;line-height:1.15">'+esc(nowIt.name||'')+'</div>'+(nowIt.speaker?'<div style="font-size:14px;color:var(--muted);margin-top:2px">'+esc(nowIt.speaker)+'</div>':'')+'</div>';
-    h+='</div>';
-    h+='<div style="text-align:right;flex-shrink:0;font-family:Courier New,monospace"><div style="font-size:22px;font-weight:800">'+(nowIt.start||'--:--')+'</div><div style="font-size:13px;color:var(--muted)">'+fmtDur(nowIt.dur)+'</div></div>';
-    h+='</div>';
-    h+='<div class="prog-bar" style="margin:14px 0 4px"><div class="prog-fill" id="pf_live" style="width:'+nowPct(nowIt)+'%"></div></div>';
-    h+='<div style="text-align:right;font-size:12px;color:var(--muted);font-family:Courier New,monospace"><span id="now_rem">falta '+fmtDur(nowIt.dur)+'</span></div>';
-    var chips=codeChips(nowIt.depts);
-    if(chips)h+='<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">'+chips+'</div>';
-    if(info)h+='<div style="display:flex;flex-wrap:wrap;gap:12px;border-top:1px solid var(--border);margin-top:12px;padding-top:12px">'+info+'</div>';
-    h+='</div>';
-  } else {
-    h+='<div class="card" style="text-align:center;color:var(--muted);padding:22px">À espera do início do show.</div>';
-  }
-
-  if(nextIt){
-    var accn=sc[nextIt.id]||'#4361ee';
-    h+='<div class="clabel">A seguir</div>';
-    h+='<div class="card" style="border-left:6px solid '+accn+';display:flex;align-items:center;justify-content:space-between;gap:14px">';
-    h+='<div style="min-width:0"><div style="font-size:18px;font-weight:800">'+esc(nextIt.name||'')+'</div>';
-    var ch2=codeChips(nextIt.depts);
-    if(ch2)h+='<div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">'+ch2+'</div>';
-    h+='</div>';
-    h+='<div style="text-align:right;flex-shrink:0;font-family:Courier New,monospace"><div style="font-size:18px;font-weight:800">'+(nextIt.start||'--:--')+'</div><div style="font-size:12px;color:var(--muted)">'+fmtDur(nextIt.dur)+'</div></div>';
-    h+='</div>';
-  }
+  h+='<div class="clabel">Program · ao vivo&nbsp;&nbsp;/&nbsp;&nbsp;Preview · a seguir</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:18px">';
+  if(nowIt)h+=cueCardFull(nowIt,nowNum,'live',sc[nowIt.id]||'#4361ee');
+  else h+='<div class="card now" style="margin:0;text-align:center;color:var(--muted);padding:26px">À espera do início do show.</div>';
+  if(nextIt)h+=cueCardFull(nextIt,nextNum,'preview',sc[nextIt.id]||'#4361ee');
+  else h+='<div class="card" style="margin:0;text-align:center;color:var(--muted);padding:26px">Fim do alinhamento.</div>';
+  h+='</div>';
 
   h+='<div class="clabel">Próximas</div>';
   h+=upcomingCaller(nextIt,sc);
