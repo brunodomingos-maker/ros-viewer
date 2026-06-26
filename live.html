@@ -82,6 +82,19 @@ td{padding:0;vertical-align:top;border-bottom:1px solid rgba(30,40,100,.07)}
 .flash span{background:rgba(15,18,53,.96);color:#fff;padding:30px 56px;border-radius:20px;font-size:42px;font-weight:900;letter-spacing:.01em;text-align:center;max-width:92vw;box-shadow:0 16px 70px rgba(0,0,0,.45);animation:flashpop .25s ease-out}
 @keyframes flashpop{from{transform:scale(.85)}to{transform:scale(1)}}
 @media(max-width:600px){.flash span{font-size:30px;padding:24px 36px}}
+.langtog{height:28px;min-width:38px;padding:0 11px;border-radius:99px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;flex-shrink:0;letter-spacing:.03em}
+.langtog:hover{border-color:var(--blue);color:var(--blue)}
+.cuemodal-bg{position:fixed;inset:0;background:rgba(15,18,53,.45);display:none;align-items:center;justify-content:center;z-index:5000;padding:18px}
+.cuemodal-bg.show{display:flex}
+.cuemodal{background:#fff;border-radius:18px;max-width:560px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,.35);border:1.5px solid var(--border)}
+.cuemodal-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 12px}
+.cuemodal-x{width:32px;height:32px;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--muted);font-size:20px;cursor:pointer;flex-shrink:0;line-height:1;font-family:inherit}
+.cuemodal-x:hover{border-color:var(--red);color:var(--red)}
+.cm-body{padding:0 20px 20px}
+.cm-grid{display:flex;flex-wrap:wrap;gap:12px 16px;border-top:1px solid var(--border);margin-top:14px;padding-top:14px}
+.cm-pair{min-width:130px;flex:1 1 130px}
+.cm-k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.cm-v{font-size:15px;font-weight:700;margin-top:2px;word-break:break-word}
 </style>
 </head>
 <body>
@@ -95,15 +108,16 @@ td{padding:0;vertical-align:top;border-bottom:1px solid rgba(30,40,100,.07)}
     <div class="show-name" id="topName">Run of Show</div>
     <div class="badge">LIVE</div>
     <div class="sync-dot" id="dot"></div>
+    <button class="langtog" id="langTog" onclick="toggleLang()">EN</button>
     <div class="timers">
       <div class="timer-block">
         <div class="timer-val green" id="clkItem">00:00:00</div>
-        <div class="timer-lbl">Item</div>
+        <div class="timer-lbl" id="lblItem">Item</div>
       </div>
       <div class="timer-sep"></div>
       <div class="timer-block">
         <div class="timer-val white" id="clkTod">00:00:00</div>
-        <div class="timer-lbl">Hora</div>
+        <div class="timer-lbl" id="lblHora">Hora</div>
       </div>
     </div>
   </div>
@@ -115,15 +129,15 @@ td{padding:0;vertical-align:top;border-bottom:1px solid rgba(30,40,100,.07)}
       <div class="zoom-val" id="zoomVal">100%</div>
       <button class="tb-btn" onclick="zoomIn()">+</button>
       <div class="col-wrap">
-        <button class="tb-btn" onclick="toggleColDd(event)">Colunas &#9662;</button>
+        <button class="tb-btn" onclick="toggleColDd(event)"><span id="lblColunas">Colunas</span> &#9662;</button>
         <div class="col-dd" id="colDd">
-          <div class="cp-item" onclick="toggleCol('dur')"><div class="cp-chk on" id="chk-dur">&#10003;</div>Dur.</div>
-          <div class="cp-item" onclick="toggleCol('start')"><div class="cp-chk on" id="chk-start">&#10003;</div>Start</div>
-          <div class="cp-item" onclick="toggleCol('audio')"><div class="cp-chk on" id="chk-audio">&#10003;</div>Audio</div>
-          <div class="cp-item" onclick="toggleCol('video')"><div class="cp-chk on" id="chk-video">&#10003;</div>Video</div>
-          <div class="cp-item" onclick="toggleCol('lights')"><div class="cp-chk on" id="chk-lights">&#10003;</div>Iluminacao</div>
-          <div class="cp-item" onclick="toggleCol('furniture')"><div class="cp-chk on" id="chk-furniture">&#10003;</div>Palco</div>
-          <div class="cp-item" onclick="toggleCol('notes')"><div class="cp-chk on" id="chk-notes">&#10003;</div>Notas</div>
+          <div class="cp-item" onclick="toggleCol('dur')"><div class="cp-chk on" id="chk-dur">&#10003;</div><span id="lblDdDur">Dur.</span></div>
+          <div class="cp-item" onclick="toggleCol('start')"><div class="cp-chk on" id="chk-start">&#10003;</div><span id="lblDdStart">Start</span></div>
+          <div class="cp-item" onclick="toggleCol('audio')"><div class="cp-chk on" id="chk-audio">&#10003;</div><span id="lblDdAudio">Audio</span></div>
+          <div class="cp-item" onclick="toggleCol('video')"><div class="cp-chk on" id="chk-video">&#10003;</div><span id="lblDdVideo">Video</span></div>
+          <div class="cp-item" onclick="toggleCol('lights')"><div class="cp-chk on" id="chk-lights">&#10003;</div><span id="lblDdLights">Iluminacao</span></div>
+          <div class="cp-item" onclick="toggleCol('furniture')"><div class="cp-chk on" id="chk-furniture">&#10003;</div><span id="lblDdFurniture">Palco</span></div>
+          <div class="cp-item" onclick="toggleCol('notes')"><div class="cp-chk on" id="chk-notes">&#10003;</div><span id="lblDdNotes">Notas</span></div>
         </div>
       </div>
     </div>
@@ -134,14 +148,14 @@ td{padding:0;vertical-align:top;border-bottom:1px solid rgba(30,40,100,.07)}
       <table id="rosTable">
         <thead><tr>
           <th style="width:36px;text-align:center">#</th>
-          <th style="min-width:220px">Item</th>
-          <th class="col-dur" style="min-width:60px">Dur.</th>
-          <th class="col-start" style="min-width:68px">Start</th>
-          <th class="col-audio hide-mob" style="min-width:100px">Audio</th>
-          <th class="col-video hide-mob" style="min-width:80px">Video</th>
-          <th class="col-lights hide-mob" style="min-width:100px">Iluminacao</th>
-          <th class="col-furniture hide-mob" style="min-width:90px">Palco</th>
-          <th class="col-notes" style="min-width:140px">Notas</th>
+          <th id="thItem" style="min-width:220px">Item</th>
+          <th id="thDur" class="col-dur" style="min-width:60px">Dur.</th>
+          <th id="thStart" class="col-start" style="min-width:68px">Start</th>
+          <th id="thAudio" class="col-audio hide-mob" style="min-width:100px">Audio</th>
+          <th id="thVideo" class="col-video hide-mob" style="min-width:80px">Video</th>
+          <th id="thLights" class="col-lights hide-mob" style="min-width:100px">Iluminacao</th>
+          <th id="thFurniture" class="col-furniture hide-mob" style="min-width:90px">Palco</th>
+          <th id="thNotes" class="col-notes" style="min-width:140px">Notas</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
       </table>
@@ -149,11 +163,13 @@ td{padding:0;vertical-align:top;border-bottom:1px solid rgba(30,40,100,.07)}
     <div id="cardWrap" style="display:none"></div>
   </div>
   <div class="statusbar">
-    <div class="sb">Items: <strong id="stN">0</strong></div>
-    <div class="sb">Wrap: <strong id="stW">--:--</strong></div>
+    <div class="sb"><span id="lblItems">Items:</span> <strong id="stN">0</strong></div>
+    <div class="sb"><span id="lblWrap">Wrap:</span> <strong id="stW">--:--</strong></div>
     <div class="sb" style="margin-left:auto" id="stSync"></div>
   </div>
 </div>
+
+<div class="cuemodal-bg" id="cueModalBg" onclick="if(event.target===this)closeCueModal()"><div class="cuemodal" id="cueModal"></div></div>
 
 <div class="flash" id="flashEl"><span id="flashTxt"></span></div>
 
@@ -183,17 +199,64 @@ var selDepts = [];           // funcoes selecionadas na vista por funcao
 var onlyMine = false;        // filtro: so cues onde os meus departamentos agem
 
 var DEPTS = [
-  {k:'som',   label:'Som',   field:'audio',     ac:'#BA7517', dk:'#854F0B', cb:'#FAEEDA', ct:'#633806'},
-  {k:'micro', label:'Micro', field:'slides',    ac:'#0F6E56', dk:'#085041', cb:'#E1F5EE', ct:'#04342C'},
-  {k:'video', label:'Vídeo', field:'video',     ac:'#534AB7', dk:'#3C3489', cb:'#EEEDFE', ct:'#26215C'},
-  {k:'luz',   label:'Luz',   field:'lights',    ac:'#185FA5', dk:'#0C447C', cb:'#E6F1FB', ct:'#042C53'},
-  {k:'palco', label:'Palco', field:'furniture', ac:'#5F5E5A', dk:'#444441', cb:'#F1EFE8', ct:'#2C2C2A'},
-  {k:'ecras', label:'Ecrãs', field:'_screens',  ac:'#993C1D', dk:'#712B13', cb:'#FAECE7', ct:'#4A1B0C'}
+  {k:'som',   label:'Som', en:'Sound',   field:'audio',     ac:'#BA7517', dk:'#854F0B', cb:'#FAEEDA', ct:'#633806'},
+  {k:'micro', label:'Micro', en:'Mic', field:'slides',    ac:'#0F6E56', dk:'#085041', cb:'#E1F5EE', ct:'#04342C'},
+  {k:'video', label:'Vídeo', en:'Video', field:'video',     ac:'#534AB7', dk:'#3C3489', cb:'#EEEDFE', ct:'#26215C'},
+  {k:'luz',   label:'Luz', en:'Light',   field:'lights',    ac:'#185FA5', dk:'#0C447C', cb:'#E6F1FB', ct:'#042C53'},
+  {k:'palco', label:'Palco', en:'Stage', field:'furniture', ac:'#5F5E5A', dk:'#444441', cb:'#F1EFE8', ct:'#2C2C2A'},
+  {k:'ecras', label:'Ecrãs', en:'Screens', field:'_screens',  ac:'#993C1D', dk:'#712B13', cb:'#FAECE7', ct:'#4A1B0C'}
 ];
 var CODEMAP = {
   SND:{cb:'#FAEEDA',ct:'#633806'}, LGT:{cb:'#E6F1FB',ct:'#042C53'},
   VID:{cb:'#EEEDFE',ct:'#26215C'}, CAM:{cb:'#E1F5EE',ct:'#04342C'}, STG:{cb:'#F1EFE8',ct:'#2C2C2A'}
 };
+var LANG='pt';
+var I18N={
+ pt:{loading:'A carregar...',item:'Item',hora:'Hora',
+  colunas:'Colunas',hdur:'Dur.',hstart:'Início',haudio:'Áudio',hvideo:'Vídeo',hlights:'Iluminação',hstage:'Palco',hnotes:'Notas',hitem:'Item',
+  items:'Items',wrap:'Wrap',live:'tempo real',polling:'polling (Firebase offline)',noconn:'sem ligação',
+  now:'A decorrer',next:'A seguir',upcoming:'Próximas',nextprep:'A seguir · prepara',awaiting:'à espera',
+  waiting:'À espera do início do show.',endrun:'Fim do alinhamento.',noitems:'Sem items',noitemsday:'Sem items neste dia.',
+  nomore:'Sem mais cues para os departamentos escolhidos.',left:'falta',cue:'Cue',
+  muda:'muda',mantem:'mantém',prepara:'prepara',nada:'nada',
+  day:'Dia',invalid:'Link inválido.',uselink:'Usa o link enviado pelo show caller.',
+  nodata:'Sem dados.',connerr:'Erro ao ligar.',error:'Erro: ',
+  ia:'Áudio',im:'Micro',iv:'Vídeo',il:'Luz',ip:'Palco',ie:'Ecrãs',
+  mstart:'Início',mdur:'Duração',msection:'Secção',mnotes:'Notas',mclose:'Fechar'},
+ en:{loading:'Loading...',item:'Item',hora:'Time',
+  colunas:'Columns',hdur:'Dur.',hstart:'Start',haudio:'Audio',hvideo:'Video',hlights:'Lighting',hstage:'Stage',hnotes:'Notes',hitem:'Item',
+  items:'Items',wrap:'Wrap',live:'live',polling:'polling (Firebase offline)',noconn:'no connection',
+  now:'On now',next:'Up next',upcoming:'Upcoming',nextprep:'Up next · prepare',awaiting:'awaiting',
+  waiting:'Waiting for the show to start.',endrun:'End of the run.',noitems:'No items',noitemsday:'No items on this day.',
+  nomore:'No more cues for the selected departments.',left:'left',cue:'Cue',
+  muda:'change',mantem:'keep',prepara:'prep',nada:'none',
+  day:'Day',invalid:'Invalid link.',uselink:'Use the link sent by the show caller.',
+  nodata:'No data.',connerr:'Connection error.',error:'Error: ',
+  ia:'Audio',im:'Mic',iv:'Video',il:'Light',ip:'Stage',ie:'Screens',
+  mstart:'Start',mdur:'Duration',msection:'Section',mnotes:'Notes',mclose:'Close'}
+};
+function t(k){var d=I18N[LANG]||I18N.pt;return (k in d)?d[k]:(I18N.pt[k]!==undefined?I18N.pt[k]:k);}
+function dlabel(d){return (LANG==='en'&&d.en)?d.en:d.label;}
+function applyStaticLang(){
+  var set=function(id,txt){var e=document.getElementById(id);if(e)e.textContent=txt;};
+  set('loadMsg',t('loading'));set('lblItem',t('item'));set('lblHora',t('hora'));set('lblColunas',t('colunas'));
+  set('lblDdDur',t('hdur'));set('lblDdStart',t('hstart'));set('lblDdAudio',t('haudio'));set('lblDdVideo',t('hvideo'));
+  set('lblDdLights',t('hlights'));set('lblDdFurniture',t('hstage'));set('lblDdNotes',t('hnotes'));
+  set('thItem',t('hitem'));set('thDur',t('hdur'));set('thStart',t('hstart'));set('thAudio',t('haudio'));set('thVideo',t('hvideo'));
+  set('thLights',t('hlights'));set('thFurniture',t('hstage'));set('thNotes',t('hnotes'));
+  set('lblItems',t('items')+':');set('lblWrap',t('wrap')+':');
+  var lt=document.getElementById('langTog');if(lt)lt.textContent=(LANG==='en'?'PT':'EN');
+  document.documentElement.lang=LANG;
+}
+function toggleLang(){
+  LANG=(LANG==='en'?'pt':'en');
+  try{
+    var p=getParams();p.lang=LANG;
+    var qs=Object.keys(p).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(p[k]);}).join('&');
+    if(history&&history.replaceState)history.replaceState(null,'',location.pathname+location.search+'#'+qs);
+  }catch(e){}
+  applyStaticLang();render();
+}
 function deptByKey(k){ for(var i=0;i<DEPTS.length;i++)if(DEPTS[i].k===k)return DEPTS[i]; return null; }
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -260,7 +323,7 @@ function renderPillbar(){
   DEPTS.forEach(function(d){
     var on=selDepts.indexOf(d.k)>=0;
     var st=on?('background:'+d.ac+';border-color:'+d.ac+';color:#fff'):('color:'+d.dk+';border-color:'+d.cb);
-    h+='<button class="dpill" style="'+st+'" onclick="toggleDept(\''+d.k+'\')">'+d.label+'</button>';
+    h+='<button class="dpill" style="'+st+'" onclick="toggleDept(\''+d.k+'\')">'+dlabel(d)+'</button>';
   });
   h+='<label class="toggle" onclick="toggleOnlyMine()" style="'+(viewMode==='role'?'':'display:none')+'"><span class="tgl'+(onlyMine?' on':'')+'"></span>só as minhas</label>';
   document.getElementById('pillbar').innerHTML=h;
@@ -284,7 +347,7 @@ function setSync(state, extra){
   var color=state==='live'?'var(--green)':state==='fallback'?'var(--amber)':'var(--red)';
   if(dot)dot.style.background=color;
   if(lbl){
-    var txt=state==='live'?'tempo real':state==='fallback'?'polling (Firebase offline)':'sem ligacao';
+    var txt=state==='live'?t('live'):state==='fallback'?t('polling'):t('noconn');
     lbl.textContent=txt+(extra?' \u00b7 '+extra:'');
   }
 }
@@ -297,10 +360,10 @@ function fetchData(){
   window[cbName]=function(data){
     try{delete window[cbName];}catch(e){}
     if(data&&data.ok)processData(data);
-    else if(firstLoad)document.getElementById('loadMsg').textContent='Sem dados.';
+    else if(firstLoad)document.getElementById('loadMsg').textContent=t('nodata');
   };
   var s=document.createElement('script');
-  s.onerror=function(){try{delete window[cbName];}catch(e){}if(firstLoad)document.getElementById('loadMsg').textContent='Erro ao ligar.';};
+  s.onerror=function(){try{delete window[cbName];}catch(e){}if(firstLoad)document.getElementById('loadMsg').textContent=t('connerr');};
   s.src=url;
   document.head.appendChild(s);
 }
@@ -336,7 +399,7 @@ function processData(data){
     }
     renderTabs();render();updateStats();
   }catch(e){
-    if(firstLoad)document.getElementById('loadMsg').textContent='Erro: '+e.message;
+    if(firstLoad)document.getElementById('loadMsg').textContent=t('error')+e.message;
   }
 }
 
@@ -409,7 +472,7 @@ function renderTabs(){
   if(days.length<=1){bar.innerHTML='';return;}
   var h='';
   for(var i=0;i<days.length;i++)
-    h+='<button class="tab'+(i===currentDay?' active':'')+'" onclick="switchDay('+i+')">'+(days[i].label||'Dia '+(i+1))+'</button>';
+    h+='<button class="tab'+(i===currentDay?' active':'')+'" onclick="switchDay('+i+')">'+(days[i].label||(t('day')+' '+(i+1)))+'</button>';
   bar.innerHTML=h;
 }
 function switchDay(idx){currentDay=idx;rows=days[idx].rows||[];renderTabs();render();updateStats();}
@@ -439,7 +502,7 @@ function render(){
 // ── VISTA TABELA ─────────────────────────────────────────────────────────────
 function renderTable(){
   var body=document.getElementById('tbody');
-  if(!rows.length){body.innerHTML='<tr><td colspan="9" style="padding:40px;text-align:center;color:var(--muted)">Sem items</td></tr>';return;}
+  if(!rows.length){body.innerHTML='<tr><td colspan="9" style="padding:40px;text-align:center;color:var(--muted)">'+t('noitems')+'</td></tr>';return;}
   var now=new Date(),nowM=now.getHours()*60+now.getMinutes()+(now.getSeconds()/60);
   var h='',num=0;
   rows.forEach(function(r){
@@ -454,7 +517,7 @@ function renderTable(){
     var pct=isLive&&liveItemStart&&r.dur?Math.min((Date.now()-liveItemStart)/1000/((r.dur||1)*60)*100,100):0;
     var prog=isLive?'<div class="prog-bar" style="margin-top:6px"><div class="prog-fill" id="pf_'+r.id+'" style="width:'+pct.toFixed(1)+'%"></div></div>':'';
     var cls=isLive?'live-row':isDone?'done-row':'';
-    h+='<tr class="'+cls+'" id="tr_'+r.id+'">';
+    h+='<tr class="'+cls+'" id="tr_'+r.id+'" onclick="openCueModal(\''+r.id+'\')" style="cursor:pointer">';
     h+='<td><div class="cell" style="text-align:center;color:var(--muted)">'+(isLive?'&#9658;':num)+'</div></td>';
     h+='<td><div class="cell"><div class="item-name">'+esc(r.name||'')+'</div>'+(r.speaker?'<div class="item-speaker">'+esc(r.speaker)+'</div>':'')+prog+'</div></td>';
     h+='<td class="col-dur"><div class="cell" style="font-family:Courier New,monospace;color:var(--muted)">'+fmtDur(r.dur)+'</div></td>';
@@ -472,74 +535,64 @@ function renderTable(){
 
 // ── VISTA SHOW CALLER ────────────────────────────────────────────────────────
 function infoPairs(it){
-  var src=[['Áudio',it.audio],['Micro',it.slides],['Vídeo',it.video],['Luz',it.lights],['Palco',it.furniture],['Ecrãs',(it.screens||[]).filter(Boolean).join(' · ')]];
+  var src=[[t('ia'),it.audio],[t('im'),it.slides],[t('iv'),it.video],[t('il'),it.lights],[t('ip'),it.furniture],[t('ie'),(it.screens||[]).filter(Boolean).join(' · ')]];
   return src.filter(function(p){return p[1]&&String(p[1]).trim();});
 }
 function ctxLine(it,num){
-  return '<div style="font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--muted);text-transform:uppercase;margin-bottom:6px">A decorrer · Cue '+num+' · '+esc(it.name||'')+' · '+(it.start||'--:--')+' · <span id="now_rem">falta '+fmtDur(it.dur)+'</span></div>';
-}
-function previewMeta(it){
-  if(!it||!it.start)return 'a seguir no alinhamento';
-  var p=it.start.split(':');var sm=parseInt(p[0]||0)*60+parseInt(p[1]||0);
-  var now=new Date();var nm=now.getHours()*60+now.getMinutes();
-  var diff=sm-nm;
-  if(diff>0&&diff<600)return 'começa às '+it.start+' · daqui a '+diff+' min';
-  return 'começa às '+it.start;
-}
-function cueCardFull(it,num,kind,acc){
-  var isLive=(kind==='live');
-  var accent=isLive?acc:'#c77f0a';
-  var badge=isLive
-    ?'<span style="font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 9px;border-radius:99px;background:#e3fbef;color:#127a48">AO VIVO</span>'
-    :'<span style="font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 9px;border-radius:99px;background:#fbeed2;color:#8a560a">PREVIEW</span>';
-  var info=infoPairs(it).map(function(p){return '<div style="min-width:108px;flex:1 1 108px"><div style="font-size:11px;color:var(--muted)">'+p[0]+'</div><div style="font-size:15px;font-weight:700">'+esc(p[1])+'</div></div>';}).join('');
-  var chips=codeChips(it.depts);
-  var h='<div class="card'+(isLive?' now':'')+'" style="margin:0;border-left:6px solid '+accent+(isLive?'':';background:#fffdf9;border-color:rgba(199,127,10,.35)')+'">';
-  h+='<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">';
-  h+='<div style="display:flex;gap:11px;align-items:flex-start;min-width:0">';
-  h+='<div class="numbadge" style="background:'+accent+'1a;color:'+accent+'">'+(num||'–')+'</div>';
-  h+='<div style="min-width:0">'+badge+'<div style="font-size:22px;font-weight:800;line-height:1.15;margin-top:5px">'+esc(it.name||'')+'</div>'+(it.speaker?'<div style="font-size:13px;color:var(--muted);margin-top:2px">'+esc(it.speaker)+'</div>':'')+'</div>';
-  h+='</div>';
-  h+='<div style="text-align:right;flex-shrink:0;font-family:Courier New,monospace"><div style="font-size:20px;font-weight:800">'+(it.start||'--:--')+'</div><div style="font-size:12px;color:var(--muted)">'+fmtDur(it.dur)+'</div></div>';
-  h+='</div>';
-  if(isLive){
-    h+='<div class="prog-bar" style="margin:13px 0 4px"><div class="prog-fill" id="pf_live" style="width:'+nowPct(it)+'%"></div></div>';
-    h+='<div style="text-align:right;font-size:12px;color:var(--muted);font-family:Courier New,monospace"><span id="now_rem">falta '+fmtDur(it.dur)+'</span></div>';
-  } else {
-    h+='<div style="margin:12px 0 2px;font-size:12px;color:#8a560a;font-weight:600">'+previewMeta(it)+'</div>';
-  }
-  if(chips)h+='<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">'+chips+'</div>';
-  if(info)h+='<div style="display:flex;flex-wrap:wrap;gap:12px 14px;border-top:1px solid var(--border);margin-top:12px;padding-top:12px">'+info+'</div>';
-  h+='</div>';
-  return h;
+  return '<div style="font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--muted);text-transform:uppercase;margin-bottom:6px">'+t('now')+' · '+t('cue')+' '+num+' · '+esc(it.name||'')+' · '+(it.start||'--:--')+' · <span id="now_rem">'+t('left')+' '+fmtDur(it.dur)+'</span></div>';
 }
 function renderCaller(){
   var items=itemsList();
-  if(!items.length){document.getElementById('cardWrap').innerHTML='<div class="cards"><div class="card" style="text-align:center;color:var(--muted)">Sem items neste dia.</div></div>';return;}
+  if(!items.length){document.getElementById('cardWrap').innerHTML='<div class="cards"><div class="card" style="text-align:center;color:var(--muted)">'+t('noitemsday')+'</div></div>';return;}
   var sc=secColorMap();
   var li=liveIndexIn(items);
   var nowIt=li>=0?items[li]:null;
   var nextIt=li>=0?items[li+1]:items[0];
   var nowNum=li>=0?li+1:0;
-  var nextNum=li>=0?li+2:1;
   var h='<div class="cards">';
 
-  h+='<div class="clabel">Program · ao vivo&nbsp;&nbsp;/&nbsp;&nbsp;Preview · a seguir</div>';
-  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:18px">';
-  if(nowIt)h+=cueCardFull(nowIt,nowNum,'live',sc[nowIt.id]||'#4361ee');
-  else h+='<div class="card now" style="margin:0;text-align:center;color:var(--muted);padding:26px">À espera do início do show.</div>';
-  if(nextIt)h+=cueCardFull(nextIt,nextNum,'preview',sc[nextIt.id]||'#4361ee');
-  else h+='<div class="card" style="margin:0;text-align:center;color:var(--muted);padding:26px">Fim do alinhamento.</div>';
-  h+='</div>';
+  h+='<div class="clabel">'+t('now')+'</div>';
+  if(nowIt){
+    var acc=sc[nowIt.id]||'#4361ee';
+    var info=infoPairs(nowIt).map(function(p){return '<div style="min-width:120px;flex:1"><div style="font-size:11px;color:var(--muted)">'+p[0]+'</div><div style="font-size:15px;font-weight:700">'+esc(p[1])+'</div></div>';}).join('');
+    h+='<div class="card now" style="cursor:pointer;border-left:6px solid '+acc+'" onclick="openCueModal(\''+nowIt.id+'\')">';
+    h+='<div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start">';
+    h+='<div style="display:flex;gap:13px;align-items:flex-start;min-width:0">';
+    h+='<div class="numbadge" style="background:'+acc+'1a;color:'+acc+'">'+nowNum+'</div>';
+    h+='<div style="min-width:0"><div style="font-size:26px;font-weight:800;line-height:1.15">'+esc(nowIt.name||'')+'</div>'+(nowIt.speaker?'<div style="font-size:14px;color:var(--muted);margin-top:2px">'+esc(nowIt.speaker)+'</div>':'')+'</div>';
+    h+='</div>';
+    h+='<div style="text-align:right;flex-shrink:0;font-family:Courier New,monospace"><div style="font-size:22px;font-weight:800">'+(nowIt.start||'--:--')+'</div><div style="font-size:13px;color:var(--muted)">'+fmtDur(nowIt.dur)+'</div></div>';
+    h+='</div>';
+    h+='<div class="prog-bar" style="margin:14px 0 4px"><div class="prog-fill" id="pf_live" style="width:'+nowPct(nowIt)+'%"></div></div>';
+    h+='<div style="text-align:right;font-size:12px;color:var(--muted);font-family:Courier New,monospace"><span id="now_rem">'+t('left')+' '+fmtDur(nowIt.dur)+'</span></div>';
+    var chips=codeChips(nowIt.depts);
+    if(chips)h+='<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">'+chips+'</div>';
+    if(info)h+='<div style="display:flex;flex-wrap:wrap;gap:12px;border-top:1px solid var(--border);margin-top:12px;padding-top:12px">'+info+'</div>';
+    h+='</div>';
+  } else {
+    h+='<div class="card" style="text-align:center;color:var(--muted);padding:22px">'+t('waiting')+'</div>';
+  }
 
-  h+='<div class="clabel">Próximas</div>';
+  if(nextIt){
+    var accn=sc[nextIt.id]||'#4361ee';
+    h+='<div class="clabel">'+t('next')+'</div>';
+    h+='<div class="card" style="cursor:pointer;border-left:6px solid '+accn+';display:flex;align-items:center;justify-content:space-between;gap:14px" onclick="openCueModal(\''+nextIt.id+'\')">';
+    h+='<div style="min-width:0"><div style="font-size:18px;font-weight:800">'+esc(nextIt.name||'')+'</div>';
+    var ch2=codeChips(nextIt.depts);
+    if(ch2)h+='<div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">'+ch2+'</div>';
+    h+='</div>';
+    h+='<div style="text-align:right;flex-shrink:0;font-family:Courier New,monospace"><div style="font-size:18px;font-weight:800">'+(nextIt.start||'--:--')+'</div><div style="font-size:12px;color:var(--muted)">'+fmtDur(nextIt.dur)+'</div></div>';
+    h+='</div>';
+  }
+
+  h+='<div class="clabel">'+t('upcoming')+'</div>';
   h+=upcomingCaller(nextIt,sc);
   h+='</div>';
   document.getElementById('cardWrap').innerHTML=h;
 }
 
 function upcomingCaller(afterIt,sc){
-  if(!afterIt)return '<div style="color:var(--muted);font-size:13px;padding:6px 2px">Fim do alinhamento.</div>';
+  if(!afterIt)return '<div style="color:var(--muted);font-size:13px;padding:6px 2px">'+t('endrun')+'</div>';
   var start=rowIndexOf(afterIt.id);
   var h='',count=0;
   for(var i=start+1;i<rows.length;i++){
@@ -547,21 +600,21 @@ function upcomingCaller(afterIt,sc){
     if(r.type==='sec'){h+='<div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:'+esc(r.color||'#4361ee')+';margin:12px 2px 5px">'+esc(r.name||'')+'</div>';continue;}
     count++;
     var acc=sc[r.id]||'#4361ee';
-    h+='<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-left:4px solid '+acc+';background:#fff;border-bottom:1px solid var(--border)">';
+    h+='<div onclick="openCueModal(\''+r.id+'\')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:10px 14px;border-left:4px solid '+acc+';background:#fff;border-bottom:1px solid var(--border)">';
     h+='<span style="font-size:13px;font-family:Courier New,monospace;color:var(--muted);width:42px;flex-shrink:0">'+(r.start||'--:--')+'</span>';
     h+='<span style="font-size:15px;font-weight:700;flex:1;min-width:0">'+esc(r.name||'')+'</span>';
     h+=codeChips(r.depts);
     h+='<span style="font-size:12px;font-family:Courier New,monospace;color:var(--muted);width:42px;text-align:right">'+fmtDur(r.dur)+'</span>';
     h+='</div>';
   }
-  if(!count)h+='<div style="color:var(--muted);font-size:13px;padding:6px 2px">Fim do alinhamento.</div>';
+  if(!count)h+='<div style="color:var(--muted);font-size:13px;padding:6px 2px">'+t('endrun')+'</div>';
   return h;
 }
 
 // ── VISTA POR FUNCAO ─────────────────────────────────────────────────────────
 function tagFor(s,d){
-  if(s.state==='muda')return '<span class="tag" style="background:'+d.cb+';color:'+d.ct+'">muda</span>';
-  if(s.state==='keep')return '<span class="tag-keep">mantém</span>';
+  if(s.state==='muda')return '<span class="tag" style="background:'+d.cb+';color:'+d.ct+'">'+t('muda')+'</span>';
+  if(s.state==='keep')return '<span class="tag-keep">'+t('mantem')+'</span>';
   return '';
 }
 function deptBlock(d,it,states,big){
@@ -570,13 +623,13 @@ function deptBlock(d,it,states,big){
   var dim=s.state==='none'||s.state==='keep';
   var size=big?28:22;
   return '<div class="card" style="margin:0;border-top:4px solid '+d.ac+';border-radius:10px;padding:13px 15px;'+(dim?'opacity:.6':'')+'">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;font-weight:800;color:'+d.dk+'">'+d.label.toUpperCase()+'</span>'+tagFor(s,d)+'</div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;font-weight:800;color:'+d.dk+'">'+dlabel(d).toUpperCase()+'</span>'+tagFor(s,d)+'</div>'
     +'<div style="font-size:'+size+'px;font-weight:800;line-height:1.15;margin-top:6px">'+esc(act)+'</div></div>';
 }
 function renderRole(){
   var sel=selDepts.map(deptByKey).filter(Boolean);
   var items=itemsList();
-  if(!items.length){document.getElementById('cardWrap').innerHTML='<div class="cards"><div class="card" style="text-align:center;color:var(--muted)">Sem items neste dia.</div></div>';return;}
+  if(!items.length){document.getElementById('cardWrap').innerHTML='<div class="cards"><div class="card" style="text-align:center;color:var(--muted)">'+t('noitemsday')+'</div></div>';return;}
   var states={}; sel.forEach(function(d){states[d.k]=roleStates(items,d);});
   var li=liveIndexIn(items);
   var nowIt=li>=0?items[li]:null;
@@ -585,41 +638,41 @@ function renderRole(){
   var cols=sel.length>=2?'1fr 1fr':'1fr';
   var h='<div class="cards">';
 
-  h+='<div class="clabel">A decorrer'+(nowIt?'':' · à espera')+'</div>';
+  h+='<div class="clabel">'+t('now')+(nowIt?'':' · '+t('awaiting'))+'</div>';
   if(nowIt){
-    h+='<div class="card now" style="padding:14px 16px">';
+    h+='<div class="card now" style="cursor:pointer;padding:14px 16px" onclick="openCueModal(\''+nowIt.id+'\')">';
     h+=ctxLine(nowIt,nowNum);
     h+='<div class="prog-bar" style="margin:0 0 12px"><div class="prog-fill" id="pf_live" style="width:'+nowPct(nowIt)+'%"></div></div>';
     h+='<div style="display:grid;grid-template-columns:'+cols+';gap:10px">';
     sel.forEach(function(d){h+=deptBlock(d,nowIt,states,sel.length===1);});
     h+='</div></div>';
   } else {
-    h+='<div class="card" style="text-align:center;color:var(--muted);padding:22px">À espera do início do show.</div>';
+    h+='<div class="card" style="text-align:center;color:var(--muted);padding:22px">'+t('waiting')+'</div>';
   }
 
   if(nextIt){
-    h+='<div class="clabel">A seguir · prepara</div>';
+    h+='<div class="clabel">'+t('nextprep')+'</div>';
     h+='<div style="display:grid;grid-template-columns:'+cols+';gap:10px;margin-bottom:16px">';
     sel.forEach(function(d){
       var s=states[d.k][nextIt.id]||{action:'',state:'none'};
       var act=s.action||'—';
       var dim=s.state!=='muda';
-      var tg=s.state==='muda'?'prepara':s.state==='keep'?'mantém':'nada';
+      var tg=s.state==='muda'?t('prepara'):s.state==='keep'?t('mantem'):t('nada');
       h+='<div class="card" style="margin:0;border-left:4px solid '+d.ac+';border-radius:10px;padding:11px 14px;'+(dim?'opacity:.6':'')+'">'
-        +'<div style="font-size:11px;font-weight:800;color:'+d.dk+'">'+d.label.toUpperCase()+' · '+tg+'</div>'
+        +'<div style="font-size:11px;font-weight:800;color:'+d.dk+'">'+dlabel(d).toUpperCase()+' · '+tg+'</div>'
         +'<div style="font-size:17px;font-weight:800;margin-top:3px">'+esc(act)+'</div></div>';
     });
     h+='</div>';
   }
 
-  h+='<div class="clabel">Próximas</div>';
+  h+='<div class="clabel">'+t('upcoming')+'</div>';
   h+=upcomingRole(nextIt,sel,states);
   h+='</div>';
   document.getElementById('cardWrap').innerHTML=h;
 }
 
 function upcomingRole(afterIt,sel,states){
-  if(!afterIt)return '<div style="color:var(--muted);font-size:13px;padding:6px 2px">Fim do alinhamento.</div>';
+  if(!afterIt)return '<div style="color:var(--muted);font-size:13px;padding:6px 2px">'+t('endrun')+'</div>';
   var start=rowIndexOf(afterIt.id);
   var h='',count=0;
   for(var i=start+1;i<rows.length;i++){
@@ -628,7 +681,7 @@ function upcomingRole(afterIt,sel,states){
     var qualifies=sel.some(function(d){var s=states[d.k][r.id];return s&&s.state!=='none';});
     if(onlyMine&&!qualifies)continue;
     count++;
-    h+='<div class="card" style="padding:10px 14px;margin-bottom:6px">';
+    h+='<div class="card" onclick="openCueModal(\''+r.id+'\')" style="cursor:pointer;padding:10px 14px;margin-bottom:6px">';
     h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:13px;font-family:Courier New,monospace;color:var(--muted)">'+(r.start||'--:--')+'</span><span style="font-size:14px;font-weight:700">'+esc(r.name||'')+'</span></div>';
     sel.forEach(function(d){
       var s=states[d.k][r.id]||{action:'',state:'none'};
@@ -636,13 +689,13 @@ function upcomingRole(afterIt,sel,states){
       var dim=s.state==='none'||s.state==='keep';
       h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;'+(dim?'opacity:.5':'')+'">'
         +'<span style="width:8px;height:8px;border-radius:2px;background:'+d.ac+';flex-shrink:0"></span>'
-        +'<span style="font-size:12px;font-weight:700;color:'+d.dk+';width:46px;flex-shrink:0">'+d.label+'</span>'
+        +'<span style="font-size:12px;font-weight:700;color:'+d.dk+';width:46px;flex-shrink:0">'+dlabel(d)+'</span>'
         +'<span style="font-size:14px;flex:1;min-width:0">'+esc(act)+'</span>'
         +tagFor(s,d)+'</div>';
     });
     h+='</div>';
   }
-  if(!count)h+='<div style="color:var(--muted);font-size:13px;padding:6px 2px">Sem mais cues para os departamentos escolhidos.</div>';
+  if(!count)h+='<div style="color:var(--muted);font-size:13px;padding:6px 2px">'+t('nomore')+'</div>';
   return h;
 }
 
@@ -673,7 +726,7 @@ setInterval(function(){
       var pf=document.getElementById('pf_'+liveCue);if(pf)pf.style.width=pct+'%';
       var pfl=document.getElementById('pf_live');if(pfl)pfl.style.width=pct+'%';
       var rem=document.getElementById('now_rem');
-      if(rem){var rs=Math.max(0,Math.round(remaining));rem.textContent=(el>=durSec?'+':'falta ')+String(Math.floor(rs/60)).padStart(2,'0')+':'+String(rs%60).padStart(2,'0');}
+      if(rem){var rs=Math.max(0,Math.round(remaining));rem.textContent=(el>=durSec?'+':t('left')+' ')+String(Math.floor(rs/60)).padStart(2,'0')+':'+String(rs%60).padStart(2,'0');}
     }
   } else {
     clkItem.textContent='00:00:00';clkItem.className='timer-val green';
@@ -681,6 +734,48 @@ setInterval(function(){
 },1000);
 
 // ── ARRANQUE ─────────────────────────────────────────────────────────────────
+function findItemById(id){for(var i=0;i<rows.length;i++)if(rows[i].id===id&&rows[i].type==='item')return rows[i];return null;}
+function cueNumSection(id){
+  var num=0,sec=null,col='#4361ee';
+  for(var i=0;i<rows.length;i++){
+    var r=rows[i];
+    if(r.type==='sec'){sec=r.name||'';col=r.color||'#4361ee';continue;}
+    if(r.type==='item'){num++;if(r.id===id)return {num:num,sec:sec,col:col};}
+  }
+  return {num:0,sec:null,col:col};
+}
+function openCueModal(id){
+  var it=findItemById(id);if(!it)return;
+  var m=cueNumSection(id),acc=m.col||'#4361ee';
+  var pairs=infoPairs(it);
+  var h='';
+  h+='<div class="cuemodal-h" style="border-top:5px solid '+acc+';border-radius:18px 18px 0 0">';
+  h+='<div style="min-width:0">';
+  if(m.sec)h+='<div style="font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:'+esc(acc)+'">'+esc(m.sec)+'</div>';
+  h+='<div style="font-size:22px;font-weight:800;line-height:1.2;margin-top:3px">'+esc(it.name||'')+'</div>';
+  if(it.speaker)h+='<div style="font-size:14px;color:var(--muted);margin-top:3px">'+esc(it.speaker)+'</div>';
+  h+='</div>';
+  h+='<button class="cuemodal-x" onclick="closeCueModal()" aria-label="'+t('mclose')+'">&times;</button>';
+  h+='</div><div class="cm-body">';
+  h+='<div class="cm-grid" style="border-top:none;margin-top:2px;padding-top:0">';
+  h+='<div class="cm-pair"><div class="cm-k">'+t('cue')+'</div><div class="cm-v">'+(m.num||'–')+'</div></div>';
+  h+='<div class="cm-pair"><div class="cm-k">'+t('mstart')+'</div><div class="cm-v" style="font-family:Courier New,monospace">'+(it.start||'--:--')+'</div></div>';
+  h+='<div class="cm-pair"><div class="cm-k">'+t('mdur')+'</div><div class="cm-v" style="font-family:Courier New,monospace">'+fmtDur(it.dur)+'</div></div>';
+  h+='</div>';
+  var chips=codeChips(it.depts);
+  if(chips)h+='<div style="display:flex;gap:6px;margin-top:12px;flex-wrap:wrap">'+chips+'</div>';
+  if(pairs.length){
+    h+='<div class="cm-grid">';
+    pairs.forEach(function(p){h+='<div class="cm-pair"><div class="cm-k">'+esc(p[0])+'</div><div class="cm-v">'+esc(p[1])+'</div></div>';});
+    h+='</div>';
+  }
+  if(it.notes)h+='<div class="cm-grid"><div class="cm-pair" style="flex-basis:100%"><div class="cm-k">'+t('mnotes')+'</div><div class="cm-v" style="font-weight:600">'+esc(it.notes)+'</div></div></div>';
+  h+='</div>';
+  document.getElementById('cueModal').innerHTML=h;
+  document.getElementById('cueModalBg').classList.add('show');
+}
+function closeCueModal(){var b=document.getElementById('cueModalBg');if(b)b.classList.remove('show');}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'||e.keyCode===27)closeCueModal();});
 function initFromParams(p){
   var v=(p['view']||'').toLowerCase();
   if(v==='table'||v==='tabela')viewMode='table';
@@ -702,8 +797,10 @@ window.addEventListener('load',function(){
   var params=getParams();
   GAS_URL=params['gas']||'';
   SHOW_ID=params['show']||'';
+  var _lg=(params['lang']||'').toLowerCase();if(_lg==='en'||_lg==='pt')LANG=_lg;
+  applyStaticLang();
   if(!GAS_URL||!SHOW_ID){
-    document.getElementById('loadMsg').innerHTML='&#9888; Link invalido.<br><small style="color:var(--muted)">Usa o link enviado pelo show caller.</small>';
+    document.getElementById('loadMsg').innerHTML='&#9888; '+t('invalid')+'<br><small style="color:var(--muted)">'+t('uselink')+'</small>';
     return;
   }
   initFromParams(params);
